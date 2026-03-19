@@ -14,10 +14,10 @@ from typing import Annotated, Sequence, TypedDict, Optional
 import multiprocessing
 
 import redis
-from langchain_openai.chat_models import ChatOpenAI
-from langchain.schema import AIMessage, BaseMessage, HumanMessage, SystemMessage
+from langchain_openai import ChatOpenAI
+from langchain_core.messages import AIMessage, BaseMessage, HumanMessage, SystemMessage
 from langchain_core.messages.tool import ToolMessage
-from langchain.callbacks.streaming_stdout import StreamingStdOutCallbackHandler
+from langchain_core.callbacks import StreamingStdOutCallbackHandler
 
 from langchain.tools import tool
 from langgraph.graph import StateGraph, END

@@ -2,7 +2,7 @@ import asyncio
 import json
 import os
 
-from langchain.schema import HumanMessage
+from langchain_core.messages import HumanMessage
 from langchain.tools import Tool
 from langchain_mcp_adapters.client import MultiServerMCPClient
 

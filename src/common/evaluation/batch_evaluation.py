@@ -4,7 +4,7 @@ Handles multi-turn conversations and surfaces diagnostics, including parameter a
 """
 from __future__ import annotations
 import builtins
-from langchain.schema import BaseMessage
+from langchain_core.messages import BaseMessage
 import operator
 from typing import Dict, List, Annotated, Sequence, Optional
 builtins.Annotated = Annotated
@@ -185,15 +185,26 @@ def evaluate_single_instance(raw: str, graph) -> Optional[Dict[str, float]]:
         for m in result["messages"]:
             if not isinstance(m, AIMessage):
                 continue
-            for tc in m.additional_kwargs.get("tool_calls", []):
-                if "function" in tc:
-                    name = tc["function"]["name"]
-                    params = json.loads(tc["function"]["arguments"])
-                else:
-                    name = tc.get("name")
-                    params = tc.get("args", {})
-                pred_tool_names.append(name)
-                pred_call_objs.append({"tool": name, "params": params})
+            
+            # Modern LangChain tool calls
+            if hasattr(m, "tool_calls") and m.tool_calls:
+                for tc in m.tool_calls:
+                    name = tc["name"]
+                    params = tc["args"]
+                    pred_tool_names.append(name)
+                    pred_call_objs.append({"tool": name, "params": params})
+            
+            # Legacy additional_kwargs fallback
+            elif "tool_calls" in m.additional_kwargs:
+                for tc in m.additional_kwargs["tool_calls"]:
+                    if "function" in tc:
+                        name = tc["function"]["name"]
+                        params = json.loads(tc["function"]["arguments"])
+                    else:
+                        name = tc.get("name")
+                        params = tc.get("args", {})
+                    pred_tool_names.append(name)
+                    pred_call_objs.append({"tool": name, "params": params})
 
         expected_routing = ex.get("expected_routing", "").lower()
         routing_acc = 1.0 if routing_pred == expected_routing else 0.0

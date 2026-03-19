@@ -14,12 +14,12 @@ The evaluation framework supports multiple agent types with standardized metrics
 ## Available Evaluation Sets
 
 ### 1. E-commerce Customer Support
-**Dataset**: `src/common/evaluation/scenarios/ecommerce_customer_support_evaluation_set.json`
+**Dataset**: `src/common/evaluation/scenarios/ecommerce_customer_support_evaluation_set.jsonl`
 **Agent**: `src/frameworks/langgraph_agents/ecommerce_customer_support/customer_support_agent.py`
 
 ```bash
 python -m src.common.evaluation.batch_evaluation \
-  --dataset src/common/evaluation/scenarios/ecommerce_customer_support_evaluation_set.json \
+  --dataset src/common/evaluation/scenarios/ecommerce_customer_support_evaluation_set.jsonl \
   --graph_py src/frameworks/langgraph_agents/ecommerce_customer_support/customer_support_agent.py
 ```
 

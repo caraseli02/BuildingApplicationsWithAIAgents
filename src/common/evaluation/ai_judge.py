@@ -64,7 +64,7 @@ class AIJudge:
 
     def __init__(self, *, llm: Optional[ChatOpenAI] = None,
                  rubrics: Optional[Mapping[str, tuple[str, bool]]] = None):
-        self.llm = llm or ChatOpenAI(model="gpt-4o", temperature=0.0)
+        self.llm = llm or ChatOpenAI(model="gpt-4o-mini", temperature=0.0)
         self.rubrics: Dict[str, tuple[str, bool]] = dict(rubrics or DEFAULT_RUBRICS)
 
     def evaluate(self, prediction: str, reference: Optional[str] = None,

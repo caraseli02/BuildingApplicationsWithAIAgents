@@ -19,7 +19,7 @@ def fake_post(monkeypatch):
     """
     calls = {}
 
-    def fake_post_func(url, data, headers):
+    def fake_post_func(url, data, headers, **kwargs):
         # Record the arguments for later assertions
         calls['url'] = url
         calls['data'] = data
@@ -93,7 +93,7 @@ def test_log_to_loki_prints_error_status(monkeypatch, capsys, status_code, resp_
     """
     calls = {}
 
-    def fake_post_error(url, data, headers):
+    def fake_post_error(url, data, headers, **kwargs):
         calls["url"] = url
         calls["data"] = data
         calls["headers"] = headers

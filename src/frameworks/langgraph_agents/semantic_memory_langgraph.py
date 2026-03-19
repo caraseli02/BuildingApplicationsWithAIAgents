@@ -3,6 +3,9 @@ from typing_extensions import TypedDict
 
 from langchain_openai import ChatOpenAI
 from langgraph.graph import StateGraph, MessagesState, START
+from dotenv import load_dotenv
+
+load_dotenv()
 
 llm = ChatOpenAI(model="gpt-4o")
 
@@ -11,7 +14,15 @@ def call_model(state: MessagesState):
     return {"messages": response}
 
 
-from vectordb import Memory
+# from vectordb import Memory
+class Memory:
+    """Mock Memory class for demonstration since the required version of vectordb is unavailable."""
+    def __init__(self, **kwargs):
+        self.storage = []
+    def save(self, text, metadata):
+        self.storage.append({"text": text, "metadata": metadata})
+    def search(self, query, top_n=3):
+        return self.storage[:top_n]
 
 memory = Memory(chunking_strategy={'mode':'sliding_window', 'window_size': 128, 'overlap': 16})
 

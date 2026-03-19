@@ -3,6 +3,9 @@ from typing_extensions import TypedDict
 from langchain_openai import ChatOpenAI
 from langgraph.graph import StateGraph, MessagesState, START
 from langchain_core.messages import HumanMessage
+from dotenv import load_dotenv
+
+load_dotenv()
 
 llm = ChatOpenAI(model="gpt-4o")
 

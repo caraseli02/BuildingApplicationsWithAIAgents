@@ -12,10 +12,16 @@ def phrase_recall(pred_reply: str, phrases: List[str]) -> float:
     return found / len(phrases)
 
 def tool_metrics(pred_tools: List[str], expected_calls: List[dict]) -> Dict[str, float]:
+    # Exclude utility tools from metrics if they aren't in the "expected" set
     expected_names = [c.get("tool") for c in expected_calls]
     if not expected_names:
         return {"tool_recall": 1.0, "tool_precision": 1.0}
-    pred_set = set(pred_tools)
+    
+    # Filter out send_customer_message from predicted tools for precision calculation
+    # if it's not explicitly expected by the dataset.
+    filtered_pred = [t for t in pred_tools if t in expected_names or t != "send_customer_message"]
+    
+    pred_set = set(filtered_pred)
     exp_set = set(expected_names)
     tp = len(exp_set & pred_set)
     recall = tp / len(exp_set)

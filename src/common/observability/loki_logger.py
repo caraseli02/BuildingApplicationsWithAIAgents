@@ -11,9 +11,13 @@ def log_to_loki(label: str, message: str):
             "values": [[str(int(time.time() * 1e9)), message]]
         }]
     }
-    response = requests.post(url, data=json.dumps(log_entry), headers=headers)
-    print("Status:", response.status_code)
-    print("Response:", response.text)
+    try:
+        response = requests.post(url, data=json.dumps(log_entry), headers=headers, timeout=2)
+        print(f"Status: {response.status_code}")
+        print(f"Response: {response.text}")
+    except Exception:
+        # Loki not running, that's OK for testing
+        pass
 
 if __name__ == '__main__':
     log_to_loki("llm", "This is a test log from TraceLoop LLM call")
