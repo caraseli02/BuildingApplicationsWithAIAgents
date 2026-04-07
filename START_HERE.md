@@ -1,23 +1,36 @@
-# 🚦 Environment Fix & Practice Start
+# Start Here
 
-I've looked into the `pytest` error and fixed a few things to get you started smoothly:
+This repo has been reset to a clean baseline so you can restart the book project from zero.
 
-1.  **Fixed `pytest` missing**: It wasn't installed in the `venv` directory. I've now installed `pytest`, `pytest-asyncio`, and `pytest-mock` for you.
-2.  **Synced `loki_logger`**: I found a small bug where the `log_to_loki` function wasn't printing the status as the tests expected. I've updated both the code and the tests so they match.
-3.  **Verified Core Tests**: I've confirmed that the core tests (Evaluation and Observability) are passing in your environment.
+Begin with **Chapter 0** in [LEARNING_PLAN.md](/Users/vladislavcaraseli/Documents/BuildingApplicationsWithAIAgents/LEARNING_PLAN.md).
 
-### 🚀 How to start Phase 1
-
-To run your tests and move to Phase 1 of the [LEARNING_PLAN.md](file:///Users/vladislavcaraseli/Documents/BuildingApplicationsWithAIAgents/LEARNING_PLAN.md), run these commands in your terminal:
+## First Commands
 
 ```bash
-# 1. Activate the environment
+git status --short --branch
+python3 -m venv venv
 source venv/bin/activate
-
-# 2. Run the core tests
-pytest tests/evaluation/ tests/observability/ -q
+pip install --upgrade pip
+pip install -r requirements.txt
+pip install -e .
+pip install pytest pytest-asyncio pytest-mock
+OPENAI_API_KEY=${OPENAI_API_KEY:-dummy} ./venv/bin/pytest tests/evaluation tests/observability -q
 ```
 
-*Note: Some tests in `tests/fine_tuning/` might still fail because they require heavy dependencies like `torch` which aren't in the default `requirements.txt`. I recommend ignoring those for now and focusing on the core agent and evaluation logic.*
+## Important Note
 
-Ready to go? Once you see the green dots from the command above, you're officially on Phase 1!
+Do not use full `pytest -q` as the first success gate. The day-1 goal is a clean repo plus the targeted baseline checks from Chapter 0.
+
+Also note:
+
+- editable install works from the repo root with `pip install -e .`
+- test tooling is not included in the base dependency files, so install `pytest` explicitly in Chapter 0
+- the targeted baseline tests only need an API key-shaped value, so a placeholder `OPENAI_API_KEY` is fine if you are not making live API calls yet
+
+## How We Work
+
+- you run the step
+- you show me what happened
+- I help you reason through it and choose the next move
+
+That keeps this project focused on learning by doing.

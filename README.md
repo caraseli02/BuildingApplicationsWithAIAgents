@@ -8,7 +8,7 @@
 
 This repository provides a **unified, multi-framework platform** for designing, implementing, and evaluating AI-powered agents. By separating **scenario definitions** from **framework-specific code**, we enable:
 
-* A **single spec** for each scenario (under `src/common/scenarios/`).
+* A **single evaluation dataset** for each scenario (under `src/common/evaluation/scenarios/`).
 * **Parallel implementations** in LangGraph, LangChain, Autogen (and more).
 * A **shared evaluation harness** to compare outputs across frameworks.
 * **Built-in observability** (Loki logging & OpenTelemetry/Tempo).
@@ -34,18 +34,18 @@ All scenarios, architectural patterns, and observability examples reflect the le
 
 ## Features
 
-* **Framework-Agnostic Scenario Specs**
-  Each scenario under `src/common/scenarios/<scenario_name>/` contains:
+* **Shared Scenario Datasets**
+  Each scenario ships with reusable JSONL evaluation data under:
 
-  * `spec.md`: A plain-English description of the user journey and success criteria.
-  * `data/`: Sample input/output JSON for quick tests or demos.
-  * `evaluation/`: A shared `run_eval.py` harness plus a “gold” evaluation set (JSON or CSV).
+  * `src/common/evaluation/scenarios/`
+  * one file per domain, for example `ecommerce_customer_support_evaluation_set.jsonl`
 
 * **Multi-Framework Implementations**
   Implement each scenario in parallel under:
 
-  * `src/frameworks/langgraph/`
-  * `src/frameworks/autogen/`
+  * `src/frameworks/langgraph_agents/`
+  * `src/frameworks/langchain/`
+  * `src/frameworks/autogen_agents/`
     *(Easily add more frameworks by following the same folder patterns.)*
 
 * **Built-In Observability**
@@ -81,14 +81,15 @@ All scenarios, architectural patterns, and observability examples reflect the le
    conda activate agents
    ```
 
-3. **Install Python Dependencies (and Editable “src” Packages)**
+3. **Install Python Dependencies and Local Package**
 
    ```bash
    pip install -r requirements.txt
-   pip install -e src
+   pip install -e .
+   pip install pytest pytest-asyncio pytest-mock
    ```
 
-   * `pip install -e src` ensures that modules under `src/` (e.g., `common.*`, `frameworks.*`) are importable.
+   * `pip install -e .` ensures that modules under `src/` (for example `common.*` and `frameworks.*`) are importable.
 
 ---
 
@@ -96,14 +97,11 @@ All scenarios, architectural patterns, and observability examples reflect the le
 
 ### 1. Running a Scenario Evaluation
 
-Each scenario includes a shared evaluator script:
+Use the shared batch evaluator from the repo root:
 
 ```bash
-# From the repo root:
-cd src/common/scenarios/ecommerce_customer_support/evaluation
-
-python -m src.common.evaluation.batch_evaluation \
-  --dataset src/common/evaluation/scenarios/ecommerce_customer_support_evaluation_set.json \
+OPENAI_API_KEY=your_key_here python -m src.common.evaluation.batch_evaluation \
+  --dataset src/common/evaluation/scenarios/ecommerce_customer_support_evaluation_set.jsonl \
   --graph_py src/frameworks/langgraph_agents/ecommerce_customer_support/customer_support_agent.py
 ```
 
@@ -114,19 +112,25 @@ If you want to manually run the LangGraph version of the e-commerce agent:
 
 ```bash
 python - << 'PYCODE'
-from frameworks.langgraph.scenarios.ecommerce_customer_support.implementation import run_ecommerce_support
+from frameworks.langgraph_agents.ecommerce_customer_support.customer_support_agent import graph
+from langchain_core.messages import HumanMessage
 
-payload = {
-  "order": {"order_id": "A12345", "status": "Delivered", "total": 19.99},
-  "messages": [{"type": "human", "content": "My mug arrived broken. Refund?"}]
-}
+result = graph.invoke({
+  "order": {
+    "order_id": "A12345",
+    "status": "Delivered",
+    "total": 19.99,
+    "customer_id": "CUST123"
+  },
+  "messages": [HumanMessage(content="My mug arrived broken. Refund?")]
+})
 
-response = run_ecommerce_support(payload)
-print(response)
+for message in result["messages"]:
+  print(type(message).__name__, message.content)
 PYCODE
 ```
 
-Replace `run_ecommerce_support` and the payload shape for other scenarios or frameworks accordingly.
+Set `OPENAI_API_KEY` before running live agent examples.
 
 ### 3. Observability
 
@@ -178,40 +182,34 @@ agents/
 │   │   │   ├── loki_logger.py
 │   │   │   └── instrument_tempo.py
 │   │   │
-│   │   └── scenarios/          # Scenario specs, data, evaluation harnesses
-│   │       ├── ecommerce_customer_support/
-│   │       │   ├── spec.md
-│   │       │   ├── data/
-│   │       │   │   ├── sample_input.json
-│   │       │   │   └── sample_expected.json
-│   │       │   └── evaluation/
-│   │       │       ├── run_eval.py
-│   │       │       └── ecommerce_customer_support_evaluation_set.json
-│   │       │
-│   │       └── flight_booking/
-│   │           ├── spec.md
-│   │           ├── data/
-│   │           │   ├── sample_request.json
-│   │           │   └── sample_expected.json
-│   │           └── evaluation/
-│   │               ├── run_eval.py
-│   │               └── flight_booking_full_eval.json
+│   │   └── evaluation/         # AIJudge, memory evaluation, metrics, datasets
+│   │       ├── ai_judge.py
+│   │       ├── batch_evaluation.py
+│   │       ├── memory_evaluation.py
+│   │       ├── metrics.py
+│   │       └── scenarios/
+│   │           ├── ecommerce_customer_support_evaluation_set.jsonl
+│   │           ├── healthcare_patient_intake_and_triage.jsonl
+│   │           └── ...
 │   │
 │   └── frameworks/             # One folder per agent framework
-│       ├── autogen/
-│       │   └── scenarios/
-│       │       └── ecommerce_customer_support/
-│       │           └── implementation.py
+│       ├── autogen_agents/
+│       │   ├── calculator_tool_use.py
+│       │   ├── autogen_mcp_client.py
+│       │   └── web_surfer_agent.py
 │       │
 │       ├── langchain/
-│       │   └── scenarios/
-│       │       └── ecommerce_customer_support/
-│       │           └── implementation.py
+│       │   ├── calculator_tool_use.py
+│       │   ├── hierarchical_skill_selection.py
+│       │   └── semantic_skill_selection.py
 │       │
-│       └── langgraph/
-│           └── scenarios/
-│               └── ecommerce_customer_support/
-│                   └── implementation.py
+│       └── langgraph_agents/
+│           ├── ecommerce_customer_support/
+│           │   ├── customer_support_agent.py
+│           │   └── customer_support_agent_with_traceloop.py
+│           ├── short_term_memory.py
+│           ├── semantic_memory_langgraph.py
+│           └── ...
 │
 └── tests/                      # Unit tests (pytest)
     ├── evaluation/
@@ -230,40 +228,26 @@ agents/
 ### 1. Running a LangChain Agent (Ecommerce Support)
 
 ```bash
-# From repo root:
-cd src/frameworks/langchain/scenarios/ecommerce_customer_support
-
-# Example usage:
-python - << 'PYCODE'
-from frameworks.langchain.scenarios.ecommerce_customer_support.implementation import run_ecommerce_support
-
-payload = {
-  "order": {"order_id": "A12345", "status": "Delivered", "total": 19.99},
-  "messages": [{"type": "human", "content": "My mug arrived broken. Refund?"}]
-}
-
-response = run_ecommerce_support(payload)
-print(response)
-PYCODE
+OPENAI_API_KEY=your_key_here python src/frameworks/langchain/calculator_tool_use.py
 ```
 
 ### 2. Running a LangGraph Agent (Ecommerce Support)
 
 ```bash
-# From repo root:
-cd src/frameworks/langgraph/scenarios/ecommerce_customer_support
-
-# Example usage:
 python - << 'PYCODE'
-from frameworks.langgraph.scenarios/ecommerce_customer_support.implementation import run_ecommerce_support
+from frameworks.langgraph_agents.ecommerce_customer_support.customer_support_agent import graph
+from langchain_core.messages import HumanMessage
 
-payload = {
-  "order": {"order_id": "A12345", "status": "Delivered", "total": 19.99},
-  "messages": [{"type": "human", "content": "My mug arrived broken. Refund?"}]
-}
-
-response = run_ecommerce_support(payload)
-print(response)
+result = graph.invoke({
+  "order": {
+    "order_id": "A12345",
+    "status": "Delivered",
+    "total": 19.99,
+    "customer_id": "CUST123"
+  },
+  "messages": [HumanMessage(content="My mug arrived broken. Refund?")]
+})
+print(result)
 PYCODE
 ```
 
@@ -283,14 +267,13 @@ We use **pytest** for all unit tests:
   * `tests/observability/test_loki_logger.py`
   * `tests/observability/test_instrument_tempo.py`
 
-To run the full test suite:
+To run the startup-safe baseline:
 
 ```bash
-cd /Users/your-user/dev/agents
-pytest -q
+OPENAI_API_KEY=${OPENAI_API_KEY:-dummy} pytest tests/evaluation tests/observability tests/frameworks/langgraph_agents/test_langgraph_customer_support_agent.py -q
 ```
 
-All tests should pass without errors.
+Do not use full `pytest -q` as the first success gate. Some optional or heavy-dependency paths are intentionally outside the default startup workflow.
 
 ---
 
@@ -300,14 +283,14 @@ We welcome contributions! To add a new scenario or framework, follow these steps
 
 1. **Add a new scenario spec**
 
-   * Create `src/common/scenarios/<your_scenario>/`.
-   * Write a `spec.md` (plain-English description), add sample JSON under `data/`, and place full evaluation “gold” JSON/CSV in `evaluation/`.
+   * Add a new JSONL dataset under `src/common/evaluation/scenarios/`.
+   * Document the scenario and its expected tool behavior in the relevant learning or project docs.
 
 2. **Implement the scenario in each framework**
 
-   * LangGraph: `src/frameworks/langgraph/scenarios/<your_scenario>/implementation.py`
-   * LangChain: `src/frameworks/langchain/scenarios/<your_scenario>/implementation.py`
-   * Autogen: `src/frameworks/autogen/scenarios/<your_scenario>/implementation.py`
+   * LangGraph: `src/frameworks/langgraph_agents/<your_scenario>/...`
+   * LangChain: `src/frameworks/langchain/...`
+   * Autogen: `src/frameworks/autogen_agents/...`
    * (Follow the same pattern for any new framework.)
 
 3. **Write or update tests**
@@ -317,6 +300,5 @@ We welcome contributions! To add a new scenario or framework, follow these steps
 
 4. **Submit a Pull Request**
 
-   * Verify all existing tests pass (`pytest -q`).
+   * Verify the relevant targeted tests pass.
    * Update this `README.md` if you introduce new high-level functionality or folders.
-

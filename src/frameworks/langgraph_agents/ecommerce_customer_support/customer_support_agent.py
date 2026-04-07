@@ -8,9 +8,13 @@ using LangGraph's built-in tool-calling via @tool decorators.
 import os
 import json
 import operator
-import builtins
 from typing import Annotated, Sequence, TypedDict, Optional
-from dotenv import load_dotenv
+
+try:
+    from dotenv import load_dotenv
+except ImportError:  # pragma: no cover - fallback for minimal environments
+    def load_dotenv():
+        return False
 
 load_dotenv()
 
@@ -22,7 +26,6 @@ from langchain_core.callbacks import StreamingStdOutCallbackHandler
 from langchain.tools import tool
 from langgraph.graph import StateGraph, END
 
-from traceloop.sdk import Traceloop
 from common.observability.loki_logger import log_to_loki
 
 
@@ -70,7 +73,7 @@ def check_loyalty_points(customer_id: str) -> str:
     """Fetch the loyalty points balance for a customer."""
     # Simulating a database lookup
     points_map = {"CUST123": "2500", "CUST456": "120", "CUST789": "0"}
-    points = points_map.get(customer_id, "unknown")
+    points = points_map.get(customer_id, "0")
     print(f"[TOOL] check_loyalty_points(customer_id={customer_id}) → {points}")
     log_to_loki(
         "tool.check_loyalty_points", f"customer_id={customer_id}, points={points}"
@@ -86,12 +89,24 @@ TOOLS = [
     check_loyalty_points,
 ]
 
-llm = ChatOpenAI(
-    model="gpt-4o-mini",
-    temperature=0.0,
-    callbacks=[StreamingStdOutCallbackHandler()],
-    verbose=True,
-).bind_tools(TOOLS)
+_llm = None
+
+
+def get_llm():
+    global _llm
+    if _llm is None:
+        try:
+            _llm = ChatOpenAI(
+                model="gpt-4o-mini",
+                temperature=0.0,
+                callbacks=[StreamingStdOutCallbackHandler()],
+                verbose=True,
+            ).bind_tools(TOOLS)
+        except Exception as exc:  # pragma: no cover - surfaces only in live runs
+            raise RuntimeError(
+                "Set OPENAI_API_KEY before running the customer support agent."
+            ) from exc
+    return _llm
 
 
 class AgentState(TypedDict):
@@ -101,6 +116,7 @@ class AgentState(TypedDict):
 
 
 def call_model(state: AgentState):
+    llm = get_llm()
     history = state["messages"]
 
     # Handle missing or incomplete order data gracefully

@@ -64,8 +64,13 @@ class AIJudge:
 
     def __init__(self, *, llm: Optional[ChatOpenAI] = None,
                  rubrics: Optional[Mapping[str, tuple[str, bool]]] = None):
-        self.llm = llm or ChatOpenAI(model="gpt-4o-mini", temperature=0.0)
+        self.llm = llm
         self.rubrics: Dict[str, tuple[str, bool]] = dict(rubrics or DEFAULT_RUBRICS)
+
+    def _get_llm(self) -> ChatOpenAI:
+        if self.llm is None:
+            self.llm = ChatOpenAI(model="gpt-4o-mini", temperature=0.0)
+        return self.llm
 
     def evaluate(self, prediction: str, reference: Optional[str] = None,
                  *, include_prompts: bool = False) -> Dict[str, float]:
@@ -83,7 +88,7 @@ class AIJudge:
             prompt = self._prompt(rubric, prediction, reference)
             if include_prompts:
                 scores["_prompts"][name] = "\n".join(m.content for m in prompt)
-            raw = self.llm.invoke(prompt).content.strip()
+            raw = self._get_llm().invoke(prompt).content.strip()
             try:
                 val = float(raw)
             except ValueError:
