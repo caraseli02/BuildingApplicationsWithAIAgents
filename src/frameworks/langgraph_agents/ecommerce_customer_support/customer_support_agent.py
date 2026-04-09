@@ -145,19 +145,24 @@ ORDER: {order_json}
 
     full = [SystemMessage(content=system_prompt)] + history
 
-    first: ToolMessage | BaseMessage = llm.invoke(full)
-    messages = [first]
+    current: ToolMessage | BaseMessage = llm.invoke(full)
+    messages = [current]
+    tool_rounds = 0
 
-    if getattr(first, "tool_calls", None):
-        for tc in first.tool_calls:
-            print(first)
-            print(tc["name"])
+    # The prompt requires one business action followed by send_customer_message,
+    # so keep executing tool calls until the model returns a plain assistant reply.
+    while getattr(current, "tool_calls", None):
+        tool_rounds += 1
+        if tool_rounds > 4:
+            raise RuntimeError("Customer support agent exceeded tool-call round limit.")
+
+        for tc in current.tool_calls:
             fn = next(t for t in TOOLS if t.name == tc["name"])
             out = fn.invoke(tc["args"])
             messages.append(ToolMessage(content=str(out), tool_call_id=tc["id"]))
 
-        second = llm.invoke(full + messages)
-        messages.append(second)
+        current = llm.invoke(full + messages)
+        messages.append(current)
 
     return {"messages": messages}
 

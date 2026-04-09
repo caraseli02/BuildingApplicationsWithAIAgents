@@ -5,26 +5,31 @@ from frameworks.langgraph_agents.ecommerce_customer_support import customer_supp
 
 
 class FakeToolCallingModel:
-    def __init__(self, first_call, final_reply):
-        self._first_call = first_call
-        self._final_reply = final_reply
+    def __init__(self, responses):
+        self._responses = responses
         self._calls = 0
 
     def invoke(self, _messages):
+        response = self._responses[self._calls]
         self._calls += 1
-        if self._calls == 1:
-            return AIMessage(content="", tool_calls=[self._first_call])
-        return AIMessage(content=self._final_reply)
+        return response
 
 
 def test_refund_flow(monkeypatch):
     fake_model = FakeToolCallingModel(
-        {
-            "name": "issue_refund",
-            "args": {"order_id": "A12345", "amount": 19.99},
-            "id": "tool-refund",
-        },
-        "Your refund has been queued.",
+        [
+            AIMessage(
+                content="",
+                tool_calls=[
+                    {
+                        "name": "issue_refund",
+                        "args": {"order_id": "A12345", "amount": 19.99},
+                        "id": "tool-refund",
+                    }
+                ],
+            ),
+            AIMessage(content="Your refund has been queued."),
+        ],
     )
     monkeypatch.setattr(customer_support_agent, "get_llm", lambda: fake_model)
 
@@ -40,12 +45,29 @@ def test_refund_flow(monkeypatch):
 
 def test_cancel_flow(monkeypatch):
     fake_model = FakeToolCallingModel(
-        {
-            "name": "cancel_order",
-            "args": {"order_id": "B54321"},
-            "id": "tool-cancel",
-        },
-        "Your order has been cancelled.",
+        [
+            AIMessage(
+                content="",
+                tool_calls=[
+                    {
+                        "name": "cancel_order",
+                        "args": {"order_id": "B54321"},
+                        "id": "tool-cancel",
+                    }
+                ],
+            ),
+            AIMessage(
+                content="",
+                tool_calls=[
+                    {
+                        "name": "send_customer_message",
+                        "args": {"order_id": "B54321", "text": "Your order has been cancelled."},
+                        "id": "tool-message",
+                    }
+                ],
+            ),
+            AIMessage(content="Your order has been cancelled."),
+        ],
     )
     monkeypatch.setattr(customer_support_agent, "get_llm", lambda: fake_model)
 
@@ -56,6 +78,7 @@ def test_cancel_flow(monkeypatch):
     messages = result["messages"]
 
     assert any("cancel" in m.content.lower() for m in messages), "Should confirm cancellation"
+    assert any(getattr(m, "tool_call_id", None) == "tool-message" for m in messages), "Should execute send_customer_message before final reply"
 
 
 if __name__ == "__main__":
