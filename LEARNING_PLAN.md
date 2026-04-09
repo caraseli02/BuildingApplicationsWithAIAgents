@@ -4,6 +4,16 @@
 **Mode:** build-first. We start from runnable code, inspect what it does, change one thing, and reflect on why it worked.  
 **Mentor loop:** `skim -> run -> inspect -> change -> explain back`
 
+## Current Progress
+
+As of 2026-04-07:
+
+- Chapter 0 is complete
+- startup setup and baseline checks were verified locally
+- Chapter 1 has been completed far enough to move on
+- first code exercise completed in `customer_support_agent.py`
+- next step is Chapter 2 with `short_term_memory.py`
+
 ---
 
 ## How To Use This Plan
@@ -69,6 +79,11 @@ OPENAI_API_KEY=${OPENAI_API_KEY:-dummy} ./venv/bin/pytest tests/evaluation tests
 - the virtualenv exists
 - the targeted tests run, or you have a clear written note on what still blocks them
 
+### Current status
+
+- complete
+- verified locally with the startup-safe test path
+
 ### Explain back
 
 - Why are we using targeted baseline checks instead of treating full `pytest -q` as the first gate?
@@ -100,6 +115,12 @@ Use the ecommerce agent once from a small Python entrypoint or REPL and inspect 
 - you can explain the graph from input to output without reading comments
 - you changed one small behavior and saw the result
 
+### Current status
+
+- complete enough to move on
+- exercise done: unknown loyalty points fallback changed from `"unknown"` to `"0"`
+- verification: `tests/frameworks/langgraph_agents/test_langgraph_customer_support_agent.py` passed
+
 ### Explain back
 
 - What are the main nodes and decision points in the ecommerce graph?
@@ -109,6 +130,16 @@ Use the ecommerce agent once from a small Python entrypoint or REPL and inspect 
 ## Chapter 2 - Memory and Reflection
 
 **Goal:** understand how this repo demonstrates short-term memory, semantic memory, and reflexive retry patterns.
+
+### Next action
+
+Start with:
+
+- `src/frameworks/langgraph_agents/short_term_memory.py`
+
+Before running it, answer in plain English:
+
+- what you think short-term memory means in an agent system
 
 ### Read / Inspect
 
