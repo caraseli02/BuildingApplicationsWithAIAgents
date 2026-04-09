@@ -1,17 +1,22 @@
-from typing import Annotated
+from typing import Annotated, Sequence
 from typing_extensions import TypedDict
 
 from langchain_openai import ChatOpenAI
-from langgraph.graph import StateGraph, MessagesState, START
+from langgraph.graph import END, StateGraph
+from langchain_core.messages import BaseMessage
 from dotenv import load_dotenv
 
 load_dotenv()
 
-llm = ChatOpenAI(model="gpt-4o")
+llm = ChatOpenAI(model="gpt-5.4-nano")
+
+
+class MessagesState(TypedDict):
+    messages: Annotated[Sequence[BaseMessage], lambda left, right: list(left) + list(right)]
 
 def call_model(state: MessagesState):
     response = llm.invoke(state["messages"])
-    return {"messages": response}
+    return {"messages": [response]}
 
 
 # from vectordb import Memory
@@ -60,11 +65,12 @@ results = memory.search(query, top_n=3)
 
 builder = StateGraph(MessagesState)
 builder.add_node("call_model", call_model)
-builder.add_edge(START, "call_model")
+builder.set_entry_point("call_model")
+builder.add_edge("call_model", END)
 graph = builder.compile()
 
 input_message = {"type": "user", "content": "hi! I'm bob"}
-for chunk in graph.stream({"messages": [input_message]}, {}, stream_mode="values"):
-    chunk["messages"][-1].pretty_print()
+result = graph.invoke({"messages": [input_message]})
+result["messages"][-1].pretty_print()
 
 print(results)

@@ -1,19 +1,23 @@
-from typing import Annotated
+from typing import Annotated, Sequence
 from typing_extensions import TypedDict
 from langchain_openai import ChatOpenAI
-from langgraph.graph import StateGraph, MessagesState, START
-from langchain_core.messages import HumanMessage
+from langgraph.graph import END, StateGraph
+from langchain_core.messages import BaseMessage, HumanMessage
 from dotenv import load_dotenv
 
 load_dotenv()
 
-llm = ChatOpenAI(model="gpt-4o")
+llm = ChatOpenAI(model="gpt-5.4-nano")
 
 reflections = []
 
+
+class MessagesState(TypedDict):
+    messages: Annotated[Sequence[BaseMessage], lambda left, right: list(left) + list(right)]
+
 def call_model(state: MessagesState):
     response = llm.invoke(state["messages"])
-    return {"messages": response}
+    return {"messages": [response]}
 
 reflexion_prompt = f"""You will be given the history of a past experience in which you were 
 placed in an environment and given a task to complete. You were unsuccessful in 
@@ -22,7 +26,14 @@ the strategy and path you took to attempt to complete the task.
 Devise a concise, new plan of action that accounts for your mistake with reference 
 to specific actions that you should have taken. For example, if you tried A and B but forgot C, 
 then devise a plan to achieve C with environment-specific actions. You will need this 
-later when you are solving the same task. Give your plan after "Plan". 
+later when you are solving the same task.
+Your response must:
+- start with "Plan:"
+- include no more than 4 bullet points
+- mention the wrong product choice
+- mention the price constraint
+- include one concrete next search query
+ 
 
 Instruction:
 i am looking for dairy free and apple variety pack of chips, and price lower than 30.00 dollars
@@ -78,7 +89,8 @@ Plan:
 
 builder = StateGraph(MessagesState)
 builder.add_node("reflexion", call_model)
-builder.add_edge(START, "reflexion")
+builder.set_entry_point("reflexion")
+builder.add_edge("reflexion", END)
 graph = builder.compile()
 
 result = graph.invoke(

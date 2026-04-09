@@ -1,16 +1,20 @@
-from typing import Annotated
+from typing import Annotated, Sequence
 from typing_extensions import TypedDict
 from langchain_openai import ChatOpenAI
-from langgraph.graph import StateGraph, MessagesState, START
-from langchain_core.messages import HumanMessage
+from langgraph.graph import END, StateGraph
+from langchain_core.messages import BaseMessage, HumanMessage
 
 # Initialize the LLM
 llm = ChatOpenAI(model="gpt-4o")
 
+
+class MessagesState(TypedDict):
+    messages: Annotated[Sequence[BaseMessage], lambda left, right: list(left) + list(right)]
+
 # Function to call the LLM
 def call_model(state: MessagesState):
     response = llm.invoke(state["messages"])
-    return {"messages": response}
+    return {"messages": [response]}
 
 class InsightAgent:
     def __init__(self):
@@ -26,7 +30,8 @@ class InsightAgent:
         # Build the state graph
         builder = StateGraph(MessagesState)
         builder.add_node("generate_insight", call_model)
-        builder.add_edge(START, "generate_insight")
+        builder.set_entry_point("generate_insight")
+        builder.add_edge("generate_insight", END)
         graph = builder.compile()
 
         # Invoke the graph with the messages
@@ -80,7 +85,8 @@ class InsightAgent:
         # Build the state graph for reflection
         builder = StateGraph(MessagesState)
         builder.add_node("reflection", call_model)
-        builder.add_edge(START, "reflection")
+        builder.set_entry_point("reflection")
+        builder.add_edge("reflection", END)
         graph = builder.compile()
 
         # Invoke the graph with the reflection prompt
