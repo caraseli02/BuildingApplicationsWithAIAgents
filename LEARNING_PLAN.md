@@ -4,6 +4,20 @@
 **Mode:** build-first. We start from runnable code, inspect what it does, change one thing, and reflect on why it worked.  
 **Mentor loop:** `skim -> run -> inspect -> change -> explain back`
 
+## Visual Inspection Default
+
+Use LangSmith Studio as the default visual debugging workflow for LangGraph examples in this repo.
+
+Why:
+
+- it shows prompts, tool calls, and final outputs directly
+- it is a better fit for learning agent execution than maintaining a custom frontend
+- the custom Vue/Nuxt app remains available only as an optional sandbox for future repo-specific surfaces
+
+Setup guide: [docs/langsmith-studio.md](docs/langsmith-studio.md)
+
+Important: install the `studio` extra with `pip install -e ".[studio]"` when you want `langgraph dev`.
+
 ## Current Progress
 
 As of 2026-04-07:

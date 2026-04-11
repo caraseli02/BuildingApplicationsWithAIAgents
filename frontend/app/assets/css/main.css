@@ -158,6 +158,21 @@ button[aria-label="Toggle Component Inspector"] {
   align-items: start;
 }
 
+.sandbox-notice {
+  display: grid;
+  gap: 8px;
+  margin-bottom: 22px;
+  border-color: rgba(183, 73, 22, 0.22);
+  background: linear-gradient(180deg, rgba(255, 242, 222, 0.92), rgba(255, 250, 242, 0.86));
+}
+
+.sandbox-notice__text {
+  margin: 0;
+  max-width: 54rem;
+  color: var(--text-soft);
+  line-height: 1.6;
+}
+
 .panel,
 .hero-panel {
   position: relative;

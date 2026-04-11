@@ -95,6 +95,36 @@ All scenarios, architectural patterns, and observability examples reflect the le
 
 ## Usage
 
+### 0. Preferred Visual Workflow: LangSmith Studio
+
+If your goal is to understand what the agent is doing step by step, use LangSmith Studio instead of the custom Nuxt explorer.
+
+Studio is now the primary visual inspection workflow for this repo because it can already show:
+
+- prompts sent to the model
+- tool calls and results
+- intermediate execution state
+- final output and debugging context
+
+Quick start:
+
+```bash
+python3 -m venv venv
+source venv/bin/activate
+pip install --upgrade pip
+pip install -e ".[studio]"
+cp .env.example .env
+langgraph dev
+```
+
+Then open:
+
+```text
+https://smith.langchain.com/studio/?baseUrl=http://127.0.0.1:2024
+```
+
+Full setup guide: [docs/langsmith-studio.md](docs/langsmith-studio.md)
+
 ### 1. Running a Scenario Evaluation
 
 Use the shared batch evaluator from the repo root:
@@ -132,7 +162,13 @@ PYCODE
 
 Set `OPENAI_API_KEY` before running live agent examples.
 
-### 3. Observability
+### 3. Optional Custom Frontend Sandbox
+
+The Vue/Nuxt app under [frontend/README.md](frontend/README.md) is preserved as an optional sandbox for future repo-specific interfaces.
+
+It is no longer the recommended way to inspect agent behavior.
+
+### 4. Observability
 
 * **Loki Logging**
   Any call to `log_to_loki(label, message)` in your code sends a JSON payload to:
