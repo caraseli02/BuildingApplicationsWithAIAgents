@@ -34,6 +34,16 @@ https://smith.langchain.com/studio/?baseUrl=http://127.0.0.1:2024
 
 Guide: [docs/langsmith-studio.md](docs/langsmith-studio.md)
 
+The learning plan now assumes a Studio-first loop:
+
+1. predict what the example will do
+2. run it
+3. inspect the trace or runtime output
+4. explain what happened
+5. make one small change and verify the effect
+
+Use [LEARNING_PLAN.md](LEARNING_PLAN.md) as the main curriculum.
+
 ## Verified Baseline
 
 ```bash
@@ -66,6 +76,10 @@ Resume from here:
 - the first exercise changed unknown loyalty points from `"unknown"` to `"0"`
 - the framework test passed after that change
 - the next learning step is Chapter 2, starting with `short_term_memory.py`
+
+Before moving on, write one prediction:
+
+- how short-term memory should change the next run compared with a stateless flow
 
 ## Important Note
 

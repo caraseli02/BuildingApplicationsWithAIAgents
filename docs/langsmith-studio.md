@@ -8,6 +8,14 @@ Use it when you want to:
 - inspect agent steps without maintaining a custom frontend
 - debug LangGraph behavior locally while keeping the repo focused on Python examples
 
+Use Studio as part of the repo's learning loop:
+
+1. predict what the graph will do
+2. run the example
+3. inspect the trace
+4. explain why the trace looks that way
+5. make one small code change and re-run
+
 The custom Nuxt app under [frontend/README.md](../frontend/README.md) is still preserved, but it is now an optional sandbox rather than the recommended way to learn what the agent is doing.
 
 ## Prerequisites
@@ -113,6 +121,22 @@ In Studio, inspect:
 - the first business tool call
 - the follow-up `send_customer_message` call
 - the final assistant reply
+
+Then write down:
+
+- what you predicted before running
+- what the trace showed instead
+- which file in `src/` explains the difference
+
+## How This Supports the Learning Plan
+
+Use Studio most deeply in chapters that are graph-native, especially:
+
+- LangGraph ecommerce orientation
+- memory and reflection, when the example naturally maps to a graph run
+- observability and capstone work
+
+For chapters that are not naturally graph-first, use Studio less and fall back to runtime inspection. The learning plan should stay honest about which surface best explains the example.
 
 ## Troubleshooting
 
