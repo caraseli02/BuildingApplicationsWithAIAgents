@@ -2,11 +2,11 @@
 typing_extensions>=4.10
 
 # LLM client & tokenizer
-openai>=1.25          # pulled in by langchain-openai but pinned here for clarity
-tiktoken>=0.5.1       # required by OpenAI models for counting tokens
-python-dotenv>=1.0
+openai==1.82.0
+tiktoken==0.9.0
+python-dotenv==1.1.0
 
 # LangChain + LangGraph
-langchain==0.1.20
-langchain-openai==0.1.4
-langgraph==0.0.28
+langchain==0.3.25
+langchain-openai==0.3.18
+langgraph==0.4.7

@@ -1,0 +1,7 @@
+{
+  "dependencies": ["."],
+  "graphs": {
+    "ecommerce_support": "./src/frameworks/langgraph_agents/ecommerce_customer_support/customer_support_agent.py:graph"
+  },
+  "env": ".env"
+}

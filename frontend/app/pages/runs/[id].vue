@@ -19,6 +19,14 @@ const chatSteps = computed(() => deriveRunChatSteps(run.value!))
 
 <template>
   <div class="panel-stack">
+    <div class="panel sandbox-notice">
+      <p class="eyebrow">Recommended workflow</p>
+      <p class="sandbox-notice__text">
+        Use LangSmith Studio for full graph execution, prompt inspection, and step debugging.
+        This run page stays available as a preserved Vue sandbox for repo-specific experiments.
+      </p>
+    </div>
+
     <div class="cta-row">
       <NuxtLink class="ghost-button" to="/">Back to launcher</NuxtLink>
     </div>

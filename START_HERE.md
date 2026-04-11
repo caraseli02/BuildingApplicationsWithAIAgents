@@ -2,6 +2,8 @@
 
 This repo has been reset to a clean baseline and the Chapter 0 startup path has already been verified.
 
+For visual inspection and debugging, the primary workflow is now LangSmith Studio, not the custom Nuxt run explorer.
+
 Current handoff:
 
 - Chapter 0 is done
@@ -9,7 +11,28 @@ Current handoff:
 - first code change is done in `customer_support_agent.py`
 - baseline test command passed locally
 
-Begin from the **Next Step** section below, then continue with [LEARNING_PLAN.md](/Users/vladislavcaraseli/Documents/BuildingApplicationsWithAIAgents/LEARNING_PLAN.md).
+Begin from the **Next Step** section below, then continue with [LEARNING_PLAN.md](LEARNING_PLAN.md).
+
+## Visual Workflow
+
+If you want to see what the agent is doing while you learn:
+
+```bash
+python3 -m venv venv
+source venv/bin/activate
+pip install --upgrade pip
+pip install -e ".[studio]"
+cp .env.example .env
+langgraph dev
+```
+
+Then open:
+
+```text
+https://smith.langchain.com/studio/?baseUrl=http://127.0.0.1:2024
+```
+
+Guide: [docs/langsmith-studio.md](docs/langsmith-studio.md)
 
 ## Verified Baseline
 
@@ -34,8 +57,8 @@ Additional verified framework smoke test:
 
 Open:
 
-- [customer_support_agent.py](/Users/vladislavcaraseli/Documents/BuildingApplicationsWithAIAgents/src/frameworks/langgraph_agents/ecommerce_customer_support/customer_support_agent.py)
-- [short_term_memory.py](/Users/vladislavcaraseli/Documents/BuildingApplicationsWithAIAgents/src/frameworks/langgraph_agents/short_term_memory.py)
+- [customer_support_agent.py](src/frameworks/langgraph_agents/ecommerce_customer_support/customer_support_agent.py)
+- [short_term_memory.py](src/frameworks/langgraph_agents/short_term_memory.py)
 
 Resume from here:
 
@@ -53,6 +76,7 @@ Also note:
 - editable install works from the repo root with `pip install -e .`
 - test tooling is not included in the base dependency files, so install `pytest` explicitly in Chapter 0
 - the targeted baseline tests only need an API key-shaped value, so a placeholder `OPENAI_API_KEY` is fine if you are not making live API calls yet
+- the custom Nuxt app is preserved for future repo-specific interfaces, but Studio is now the default visual path
 
 ## How We Work
 
