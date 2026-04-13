@@ -1,10 +1,11 @@
 from typing import Annotated, Sequence
-from typing_extensions import TypedDict
 
-from langchain_openai import ChatOpenAI
-from langgraph.graph import END, StateGraph
-from langchain_core.messages import BaseMessage
 from dotenv import load_dotenv
+from langchain_core.messages import BaseMessage
+from langchain_openai import ChatOpenAI
+from langgraph.checkpoint.memory import MemorySaver
+from langgraph.graph import END, StateGraph
+from typing_extensions import TypedDict
 
 load_dotenv()
 
@@ -20,32 +21,40 @@ def call_model(state: MessagesState):
     return {"messages": [response]}
 
 
-builder = StateGraph(MessagesState)
-builder.add_node("call_model", call_model)
-builder.set_entry_point("call_model")
-builder.add_edge("call_model", END)
-graph = builder.compile()
+def build_graph():
+    builder = StateGraph(MessagesState)
+    builder.add_node("call_model", call_model)
+    builder.set_entry_point("call_model")
+    builder.add_edge("call_model", END)
+    return builder
 
-# Fails to maintain state across the conversation
-input_message = {"type": "user", "content": "hi! I'm bob"}
-result = graph.invoke({"messages": [input_message]})
-result["messages"][-1].pretty_print()
 
-input_message = {"type": "user", "content": "what's my name?"}
-result = graph.invoke({"messages": [input_message]})
-result["messages"][-1].pretty_print()
+builder = build_graph()
+graph_without_memory = builder.compile()
+graph = graph_without_memory
 
-from langgraph.checkpoint.memory import MemorySaver
 
-# Memory is now persisted across the graph
-memory = MemorySaver()
-graph = builder.compile(checkpointer=memory)
+def run_demo():
+    # Fails to maintain state across the conversation
+    input_message = {"type": "user", "content": "hi! I'm bob"}
+    result = graph_without_memory.invoke({"messages": [input_message]})
+    result["messages"][-1].pretty_print()
 
-config = {"configurable": {"thread_id": "1"}}
-input_message = {"type": "user", "content": "hi! I'm bob"}
-result = graph.invoke({"messages": [input_message]}, config)
-result["messages"][-1].pretty_print()
+    input_message = {"type": "user", "content": "what's my name?"}
+    result = graph_without_memory.invoke({"messages": [input_message]})
+    result["messages"][-1].pretty_print()
 
-input_message = {"type": "user", "content": "what's my name?"}
-result = graph.invoke({"messages": [input_message]}, config)
-result["messages"][-1].pretty_print()
+    # Memory is now persisted across the graph
+    memory_graph = builder.compile(checkpointer=MemorySaver())
+    config = {"configurable": {"thread_id": "1"}}
+    input_message = {"type": "user", "content": "hi! I'm bob"}
+    result = memory_graph.invoke({"messages": [input_message]}, config)
+    result["messages"][-1].pretty_print()
+
+    input_message = {"type": "user", "content": "what's my name?"}
+    result = memory_graph.invoke({"messages": [input_message]}, config)
+    result["messages"][-1].pretty_print()
+
+
+if __name__ == "__main__":
+    run_demo()

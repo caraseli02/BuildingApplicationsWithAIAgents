@@ -16,6 +16,7 @@ The app still includes:
 - one scenario: `ecommerce_customer_support`
 - local trigger-and-inspect flows
 - chat/timeline presentation experiments
+- a scaffolded `mcp-weather` page and Nuxt server route for battle-testing MCP from the app side
 
 Those are now considered custom product experiments rather than the default debugging path.
 
@@ -74,6 +75,61 @@ Then open:
 
 ```text
 https://smith.langchain.com/studio/?baseUrl=http://127.0.0.1:2024
+```
+
+## MCP Weather Sandbox
+
+The frontend now includes a scaffold for a Nuxt-to-MCP battle test:
+
+- page: `app/pages/mcp-weather.vue`
+- route: `server/api/mcp/weather.post.ts`
+- server utility to implement: `server/utils/mcp/weather-client.ts`
+
+What is already set up:
+
+- the page form and result UI
+- the Nuxt server route boundary
+- config for the MCP weather server URL
+- official docs links returned by the route
+- the official TypeScript MCP SDK added to `package.json`
+
+What is intentionally left for you:
+
+- the actual MCP client code inside `server/utils/mcp/weather-client.ts`
+
+Recommended implementation references:
+
+- LangChain MCP docs: [docs.langchain.com/oss/python/langchain/mcp](https://docs.langchain.com/oss/python/langchain/mcp)
+- Model Context Protocol TypeScript SDK: [github.com/modelcontextprotocol/typescript-sdk](https://github.com/modelcontextprotocol/typescript-sdk)
+- MCP specification: [modelcontextprotocol.io](https://modelcontextprotocol.io)
+
+Suggested setup:
+
+1. From the repo root, run the weather server:
+
+```bash
+source venv/bin/activate
+python src/common/mcp/MCP_weather_server.py
+```
+
+2. In `frontend/`, install dependencies:
+
+```bash
+npm install
+```
+
+3. Start the Nuxt dev server:
+
+```bash
+npm run dev
+```
+
+4. Open `http://localhost:3000/mcp-weather`
+
+Optional environment variable:
+
+```bash
+MCP_WEATHER_URL=http://127.0.0.1:8000/mcp
 ```
 
 ## Tests

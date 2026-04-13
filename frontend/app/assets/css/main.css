@@ -173,6 +173,10 @@ button[aria-label="Toggle Component Inspector"] {
   line-height: 1.6;
 }
 
+.sandbox-notice__actions {
+  margin-top: 14px;
+}
+
 .panel,
 .hero-panel {
   position: relative;
@@ -517,6 +521,32 @@ button[aria-label="Toggle Component Inspector"] {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 14px;
+}
+
+.mcp-inline-error {
+  margin: 0;
+  padding: 14px 16px;
+  border-radius: 16px;
+  border: 1px solid rgba(163, 50, 43, 0.18);
+  background: rgba(163, 50, 43, 0.08);
+  color: var(--danger);
+  line-height: 1.5;
+}
+
+.mcp-mono {
+  margin: 0;
+  font-family: ui-monospace, "SFMono-Regular", "SF Mono", Consolas, monospace;
+  font-size: 0.92rem;
+  color: var(--surface-ink);
+}
+
+.mcp-steps {
+  margin: 0;
+  padding-left: 1.2rem;
+  display: grid;
+  gap: 10px;
+  color: var(--text-soft);
+  line-height: 1.55;
 }
 
 .summary-grid--detail {

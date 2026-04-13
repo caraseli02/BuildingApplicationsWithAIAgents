@@ -33,6 +33,12 @@ const launchRun = async (payload: RunRequestPayload) => {
       LangSmith Studio now replaces this app as the recommended way to inspect agent execution.
       Keep this Nuxt surface for future custom experiments, not as the main debugging tool.
     </p>
+    <div class="cta-row sandbox-notice__actions">
+      <NuxtLink class="ghost-button" to="/mcp-weather">
+        Open MCP Weather Sandbox
+      </NuxtLink>
+      <p class="muted">Scaffolded page and Nuxt route included. You implement the MCP client call yourself.</p>
+    </div>
   </div>
 
   <div class="page-grid page-grid--history-first">

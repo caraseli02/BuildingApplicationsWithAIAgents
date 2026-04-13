@@ -2,47 +2,17 @@
 
 This repo has been reset to a clean baseline and the Chapter 0 startup path has already been verified.
 
-For visual inspection and debugging, the primary workflow is now LangSmith Studio, not the custom Nuxt run explorer.
-
 Current handoff:
 
 - Chapter 0 is done
-- Chapter 1 has started
-- first code change is done in `customer_support_agent.py`
+- Chapter 1 is complete enough to move on
+- Chapter 2 is complete enough to move on
+- Chapter 3 is complete enough to move on
+- Chapter 4 is complete enough to move on
+- current extension: Nuxt MCP weather sandbox scaffold is in place
 - baseline test command passed locally
 
 Begin from the **Next Step** section below, then continue with [LEARNING_PLAN.md](LEARNING_PLAN.md).
-
-## Visual Workflow
-
-If you want to see what the agent is doing while you learn:
-
-```bash
-python3 -m venv venv
-source venv/bin/activate
-pip install --upgrade pip
-pip install -e ".[studio]"
-cp .env.example .env
-langgraph dev
-```
-
-Then open:
-
-```text
-https://smith.langchain.com/studio/?baseUrl=http://127.0.0.1:2024
-```
-
-Guide: [docs/langsmith-studio.md](docs/langsmith-studio.md)
-
-The learning plan now assumes a Studio-first loop:
-
-1. predict what the example will do
-2. run it
-3. inspect the trace or runtime output
-4. explain what happened
-5. make one small change and verify the effect
-
-Use [LEARNING_PLAN.md](LEARNING_PLAN.md) as the main curriculum.
 
 ## Verified Baseline
 
@@ -67,19 +37,47 @@ Additional verified framework smoke test:
 
 Open:
 
-- [customer_support_agent.py](src/frameworks/langgraph_agents/ecommerce_customer_support/customer_support_agent.py)
-- [short_term_memory.py](src/frameworks/langgraph_agents/short_term_memory.py)
+- [mcp-weather.vue](frontend/app/pages/mcp-weather.vue)
+- [weather.post.ts](frontend/server/api/mcp/weather.post.ts)
+- [weather-client.ts](frontend/server/utils/mcp/weather-client.ts)
+- [frontend README](frontend/README.md)
 
 Resume from here:
 
-- Chapter 1 understanding is complete enough to move on
-- the first exercise changed unknown loyalty points from `"unknown"` to `"0"`
-- the framework test passed after that change
-- the next learning step is Chapter 2, starting with `short_term_memory.py`
+- the next learning step is to implement the Nuxt-side MCP weather client
+- the server route and page already exist; only the MCP client code is intentionally missing
+- follow the comments and docs links in `frontend/server/utils/mcp/weather-client.ts`
+- battle-test the result against the live FastMCP weather server
 
-Before moving on, write one prediction:
+## Companion Resources
 
-- how short-term memory should change the next run compared with a stateless flow
+Use these after you have run the repo examples first:
+
+- [LEARNING_PLAN.md](LEARNING_PLAN.md)
+- [LangChain MCP](https://docs.langchain.com/oss/python/langchain/mcp)
+- [LangChain multi-agent](https://docs.langchain.com/oss/python/langchain/multi-agent)
+- [LangChain Academy](https://academy.langchain.com/)
+
+## Optional Visual Debugging
+
+LangSmith Studio is optional support, not the default learning path. Use it when you already understand the CLI/code path and want a visual trace.
+
+```bash
+source venv/bin/activate
+pip install -e ".[studio]"
+langgraph dev
+```
+
+```text
+https://smith.langchain.com/studio/?baseUrl=http://127.0.0.1:2024
+```
+
+Guide: [docs/langsmith-studio.md](docs/langsmith-studio.md)
+
+Available Studio graphs right now:
+
+- `ecommerce_support`
+- `short_term_memory`
 
 ## Important Note
 
@@ -90,7 +88,8 @@ Also note:
 - editable install works from the repo root with `pip install -e .`
 - test tooling is not included in the base dependency files, so install `pytest` explicitly in Chapter 0
 - the targeted baseline tests only need an API key-shaped value, so a placeholder `OPENAI_API_KEY` is fine if you are not making live API calls yet
-- the custom Nuxt app is preserved for future repo-specific interfaces, but Studio is now the default visual path
+- the custom Nuxt app is preserved for future repo-specific interfaces
+- LangSmith Studio is optional support, not the core learning route
 
 ## How We Work
 

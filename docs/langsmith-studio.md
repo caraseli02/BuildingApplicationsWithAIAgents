@@ -8,14 +8,6 @@ Use it when you want to:
 - inspect agent steps without maintaining a custom frontend
 - debug LangGraph behavior locally while keeping the repo focused on Python examples
 
-Use Studio as part of the repo's learning loop:
-
-1. predict what the graph will do
-2. run the example
-3. inspect the trace
-4. explain why the trace looks that way
-5. make one small code change and re-run
-
 The custom Nuxt app under [frontend/README.md](../frontend/README.md) is still preserved, but it is now an optional sandbox rather than the recommended way to learn what the agent is doing.
 
 ## Prerequisites
@@ -65,13 +57,14 @@ Per LangChain’s docs, with tracing disabled no data leaves your local server.
 
 ## Agent Server
 
-This repo now includes a root [langgraph.json](../langgraph.json) pointing Studio at the ecommerce customer support graph:
+This repo now includes a root [langgraph.json](../langgraph.json) pointing Studio at both the ecommerce customer support graph and the short-term memory learning example:
 
 ```json
 {
   "dependencies": ["."],
   "graphs": {
-    "ecommerce_support": "./src/frameworks/langgraph_agents/ecommerce_customer_support/customer_support_agent.py:graph"
+    "ecommerce_support": "./src/frameworks/langgraph_agents/ecommerce_customer_support/customer_support_agent.py:graph",
+    "short_term_memory": "./src/frameworks/langgraph_agents/short_term_memory.py:graph"
   },
   "env": ".env"
 }
@@ -122,21 +115,22 @@ In Studio, inspect:
 - the follow-up `send_customer_message` call
 - the final assistant reply
 
-Then write down:
+## Additional Learning Run
 
-- what you predicted before running
-- what the trace showed instead
-- which file in `src/` explains the difference
+You can also select the `short_term_memory` graph in Studio to see checkpointed memory with the same visual tooling.
 
-## How This Supports the Learning Plan
+Recommended flow:
 
-Use Studio most deeply in chapters that are graph-native, especially:
+1. Start a thread with: `hi! I'm bob`
+2. Reuse the same thread and send: `what's my name?`
 
-- LangGraph ecommerce orientation
-- memory and reflection, when the example naturally maps to a graph run
-- observability and capstone work
+What to inspect:
 
-For chapters that are not naturally graph-first, use Studio less and fall back to runtime inspection. The learning plan should stay honest about which surface best explains the example.
+- both runs stay attached to the same thread
+- the graph itself is still a single `call_model` node
+- the remembered context comes from the LangGraph server's built-in thread persistence in Studio, not from a more complex graph shape
+
+Note: the CLI demo in `short_term_memory.py` still uses `MemorySaver()` to teach the concept explicitly, but the Studio-exported graph must stay free of a custom checkpointer because LangGraph API manages persistence itself.
 
 ## Troubleshooting
 

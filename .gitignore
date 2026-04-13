@@ -92,3 +92,6 @@ dmypy.json
 *.h5
 *.hdf5
 secrets.txt
+
+# LangGraph local dev state
+.langgraph_api/

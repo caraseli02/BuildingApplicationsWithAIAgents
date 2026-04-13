@@ -1,7 +1,8 @@
 {
   "dependencies": ["."],
   "graphs": {
-    "ecommerce_support": "./src/frameworks/langgraph_agents/ecommerce_customer_support/customer_support_agent.py:graph"
+    "ecommerce_support": "./src/frameworks/langgraph_agents/ecommerce_customer_support/customer_support_agent.py:graph",
+    "short_term_memory": "./src/frameworks/langgraph_agents/short_term_memory.py:graph"
   },
   "env": ".env"
 }

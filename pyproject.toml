@@ -16,6 +16,11 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
+mcp = [
+    "fastapi",
+    "uvicorn",
+    "langchain-mcp-adapters==0.0.11",
+]
 studio = [
     "langgraph-cli[inmem]==0.3.3",
     "langsmith==0.3.42"

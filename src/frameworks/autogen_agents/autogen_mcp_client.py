@@ -12,7 +12,9 @@ Example: Autogen agent that uses MCP tools (math and weather).
 """
 
 import asyncio
+import sys
 from typing import List
+from inspect import isawaitable
 
 from langchain.tools import Tool
 from langchain_mcp_adapters.client import MultiServerMCPClient
@@ -25,8 +27,8 @@ from openai_autogen import (
 
 MCP_CONFIG = {
     "math": {
-        "command": "python3",
-        "args": ["src/common/mcp/MCP_weather_server.py"],
+        "command": sys.executable,
+        "args": ["src/common/mcp/MCP_math_server.py"],
         "transport": "stdio",
     },
     "weather": {
@@ -41,7 +43,8 @@ async def get_mcp_tools() -> List[Tool]:
     and return them as a list of LangChain Tool objects.
     """
     client = MultiServerMCPClient(MCP_CONFIG)
-    return await client.get_tools()
+    maybe_tools = client.get_tools()
+    return await maybe_tools if isawaitable(maybe_tools) else maybe_tools
 
 
 def wrap_tool_for_autogen(lc_tool: Tool):
