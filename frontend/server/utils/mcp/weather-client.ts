@@ -1,5 +1,8 @@
 import type { WeatherSandboxResponse } from '#shared/mcp-sandbox'
 import { MCP_WEATHER_TOOL, MCP_WEATHER_URL } from './config'
+import { Client } from '@modelcontextprotocol/sdk/client/index.js'
+import { StreamableHTTPClientTransport } from '@modelcontextprotocol/sdk/client/streamableHttp.js'
+
 
 const WEATHER_MCP_DOCS = [
   {
@@ -17,39 +20,70 @@ const WEATHER_MCP_DOCS = [
 ] as const
 
 export async function callWeatherMcp(city: string): Promise<WeatherSandboxResponse> {
-  /*
-   * TODO: implement the Nuxt-side MCP client here.
-   *
-   * Recommended direction:
-   * 1. Use the official TypeScript MCP SDK from `@modelcontextprotocol/sdk`.
-   * 2. Open a client transport against `MCP_WEATHER_URL`.
-   * 3. Ask the server for tools, confirm `MCP_WEATHER_TOOL` exists, then call it.
-   * 4. Pass the same query shape used by the Python client:
-   *      { query: `What is the weather in ${city}?` }
-   * 5. Extract the returned text into the `answer` field below.
-   * 6. Keep the MCP protocol and network details inside this server utility.
-   *
-   * Why this file exists:
-   * - browser code should not talk to MCP directly
-   * - Nuxt server routes are the right boundary for secrets, transport, and retries
-   * - once this function is implemented, the page and route should not need more changes
-   */
-  void MCP_WEATHER_URL
-  void MCP_WEATHER_TOOL
+  const client = new Client({
+    name: 'weather-client',
+    version: '1.0.0'
+  })
 
-  return {
-    status: 'todo',
-    city,
-    answer: null,
-    message: 'Implement `callWeatherMcp()` in frontend/server/utils/mcp/weather-client.ts to connect the Nuxt server route to the MCP weather server.',
-    implementationFile: 'frontend/server/utils/mcp/weather-client.ts',
-    docs: [...WEATHER_MCP_DOCS],
-    nextSteps: [
-      'Install frontend dependencies so the TypeScript MCP SDK is available.',
-      `Connect to ${MCP_WEATHER_URL} from this server utility, not from browser code.`,
-      `Discover tools and confirm the server exposes \`${MCP_WEATHER_TOOL}\`.`,
-      'Call the weather tool with a query string for the requested city.',
-      'Return the tool text as `answer` and switch `status` from `todo` to `ok`.'
-    ]
+  const transport = new StreamableHTTPClientTransport(new URL(MCP_WEATHER_URL))
+
+  try {
+    await client.connect(transport)
+
+    const { tools } = await client.listTools()
+    console.dir(tools, { depth: null })
+
+    const weatherTool = tools.find((tool) => tool.name === MCP_WEATHER_TOOL)
+
+    if (!weatherTool) {
+      throw new Error(`Tool '${MCP_WEATHER_TOOL}' was not found.`)
+    }
+
+    const result = await client.callTool({
+      name: MCP_WEATHER_TOOL,
+      arguments: {
+        query: `What is the weather in ${city}?`
+      }
+    })
+
+    console.dir(result, { depth: null })
+
+    const answer =
+      result &&
+        typeof result === 'object' &&
+        'structuredContent' in result &&
+        result.structuredContent &&
+        typeof result.structuredContent === 'object' &&
+        'result' in result.structuredContent &&
+        typeof result.structuredContent.result === 'string'
+        ? result.structuredContent.result
+        : null
+
+
+    return {
+      status: answer ? 'ok' : 'todo',
+      city,
+      answer,
+      message: answer
+        ? 'Nuxt server route successfully called the MCP weather server.'
+        : 'The MCP call completed, but no text answer was extracted from the result.',
+      implementationFile: 'frontend/server/utils/mcp/weather-client.ts',
+      docs: [...WEATHER_MCP_DOCS],
+      nextSteps: answer
+        ? [
+          'Try another city served by the MCP weather server.',
+          'Handle MCP errors cleanly in the server utility.',
+          'Optionally add loading and error-state polish in the page.'
+        ]
+        : [
+          'Inspect the MCP result shape again.',
+          'Adjust the answer extraction logic.',
+          'Return `status: ok` once `answer` is populated.'
+        ]
+    }
+
+  } finally {
+    await client.close()
   }
 }
+
