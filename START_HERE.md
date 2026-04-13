@@ -9,7 +9,7 @@ Current handoff:
 - Chapter 2 is complete enough to move on
 - Chapter 3 is complete enough to move on
 - Chapter 4 is complete enough to move on
-- current extension: Nuxt MCP weather sandbox scaffold is in place
+- current extension: Nuxt MCP weather sandbox works, and a ChatGPT-visible MCP Apps weather widget is scaffolded
 - baseline test command passed locally
 
 Begin from the **Next Step** section below, then continue with [LEARNING_PLAN.md](LEARNING_PLAN.md).
@@ -40,14 +40,17 @@ Open:
 - [mcp-weather.vue](frontend/app/pages/mcp-weather.vue)
 - [weather.post.ts](frontend/server/api/mcp/weather.post.ts)
 - [weather-client.ts](frontend/server/utils/mcp/weather-client.ts)
+- [weather-app-server.mjs](frontend/mcp-apps/weather-app-server.mjs)
+- [weather-widget.html](frontend/mcp-apps/weather-widget.html)
+- [docs/mcp-apps-weather.md](docs/mcp-apps-weather.md)
 - [frontend README](frontend/README.md)
 
 Resume from here:
 
-- the next learning step is to implement the Nuxt-side MCP weather client
-- the server route and page already exist; only the MCP client code is intentionally missing
-- follow the comments and docs links in `frontend/server/utils/mcp/weather-client.ts`
-- battle-test the result against the live FastMCP weather server
+- the Nuxt-side MCP weather client is already working
+- the next learning step is to understand the difference between a local app UI and a ChatGPT-visible MCP Apps widget
+- run the Apps SDK weather server, connect it from ChatGPT, and trace how the widget resource gets rendered from tool output
+- use `docs/mcp-apps-weather.md` as the runbook
 
 ## Companion Resources
 
@@ -57,6 +60,9 @@ Use these after you have run the repo examples first:
 - [LangChain MCP](https://docs.langchain.com/oss/python/langchain/mcp)
 - [LangChain multi-agent](https://docs.langchain.com/oss/python/langchain/multi-agent)
 - [LangChain Academy](https://academy.langchain.com/)
+- [OpenAI Apps SDK quickstart](https://developers.openai.com/apps-sdk/quickstart)
+- [Build your MCP server](https://developers.openai.com/apps-sdk/build/mcp-server)
+- [Build your ChatGPT UI](https://developers.openai.com/apps-sdk/build/chatgpt-ui)
 
 ## Optional Visual Debugging
 

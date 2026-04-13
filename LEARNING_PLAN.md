@@ -48,7 +48,8 @@ As of 2026-04-13:
 - the memory and reflexion examples were updated to run on the repo's pinned LangGraph version
 - the ecommerce graph and short-term memory example are both available in Studio
 - the MCP math and weather servers now run as real FastMCP servers, and the LangGraph MCP client works end to end
-- next step is the Nuxt MCP weather sandbox, with the MCP client code intentionally left for manual implementation in `frontend/server/utils/mcp/weather-client.ts`
+- the Nuxt MCP weather sandbox now works end to end from the Nuxt server route
+- next optional extension is the ChatGPT-visible MCP Apps weather widget in `frontend/mcp-apps/`
 
 ---
 

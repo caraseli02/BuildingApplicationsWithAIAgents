@@ -79,11 +79,13 @@ https://smith.langchain.com/studio/?baseUrl=http://127.0.0.1:2024
 
 ## MCP Weather Sandbox
 
-The frontend now includes a scaffold for a Nuxt-to-MCP battle test:
+The frontend now includes two MCP learning surfaces:
 
 - page: `app/pages/mcp-weather.vue`
 - route: `server/api/mcp/weather.post.ts`
-- server utility to implement: `server/utils/mcp/weather-client.ts`
+- server utility: `server/utils/mcp/weather-client.ts`
+- Apps SDK widget server: `mcp-apps/weather-app-server.mjs`
+- Apps SDK widget template: `mcp-apps/weather-widget.html`
 
 What is already set up:
 
@@ -93,15 +95,14 @@ What is already set up:
 - official docs links returned by the route
 - the official TypeScript MCP SDK added to `package.json`
 
-What is intentionally left for you:
-
-- the actual MCP client code inside `server/utils/mcp/weather-client.ts`
-
 Recommended implementation references:
 
 - LangChain MCP docs: [docs.langchain.com/oss/python/langchain/mcp](https://docs.langchain.com/oss/python/langchain/mcp)
 - Model Context Protocol TypeScript SDK: [github.com/modelcontextprotocol/typescript-sdk](https://github.com/modelcontextprotocol/typescript-sdk)
 - MCP specification: [modelcontextprotocol.io](https://modelcontextprotocol.io)
+- OpenAI Apps SDK quickstart: [developers.openai.com/apps-sdk/quickstart](https://developers.openai.com/apps-sdk/quickstart)
+- Build your MCP server: [developers.openai.com/apps-sdk/build/mcp-server](https://developers.openai.com/apps-sdk/build/mcp-server)
+- Build your ChatGPT UI: [developers.openai.com/apps-sdk/build/chatgpt-ui](https://developers.openai.com/apps-sdk/build/chatgpt-ui)
 
 Suggested setup:
 
@@ -131,6 +132,29 @@ Optional environment variable:
 ```bash
 MCP_WEATHER_URL=http://127.0.0.1:8000/mcp
 ```
+
+## MCP Apps Weather Widget
+
+The repo now also includes a minimal ChatGPT-visible Apps SDK example:
+
+```bash
+npm run mcp:weather-app
+```
+
+That starts a separate MCP server on `http://localhost:8787/mcp` that:
+
+- registers a tool called `show_weather_widget`
+- registers an HTML widget resource with the MCP Apps MIME type
+- returns `structuredContent` that the widget can render inside ChatGPT
+
+Full guide:
+
+- [docs/mcp-apps-weather.md](../docs/mcp-apps-weather.md)
+
+Important distinction:
+
+- `mcp-weather.vue` is your own Nuxt page
+- the Apps SDK weather widget is an iframe rendered by ChatGPT after a tool call
 
 ## Tests
 

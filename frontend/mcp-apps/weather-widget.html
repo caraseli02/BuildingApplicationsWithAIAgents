@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Weather widget</title>
+    <style>
+      :root {
+        color-scheme: light;
+        font-family: Georgia, "Times New Roman", serif;
+        --ink: #2b2017;
+        --muted: #6a584a;
+        --surface: rgba(255, 252, 247, 0.94);
+        --border: rgba(172, 124, 86, 0.24);
+        --accent: #944a24;
+        --accent-soft: rgba(148, 74, 36, 0.1);
+        --shadow: 0 24px 60px rgba(89, 58, 35, 0.12);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html,
+      body {
+        margin: 0;
+        min-height: 100%;
+      }
+
+      body {
+        padding: 20px;
+        background:
+          radial-gradient(circle at top left, rgba(255, 219, 183, 0.6), transparent 40%),
+          linear-gradient(180deg, #fffdf8 0%, #f5efe6 100%);
+        color: var(--ink);
+      }
+
+      .shell {
+        display: grid;
+        gap: 14px;
+        max-width: 480px;
+        margin: 0 auto;
+        padding: 18px;
+        border-radius: 24px;
+        background: var(--surface);
+        border: 1px solid var(--border);
+        box-shadow: var(--shadow);
+      }
+
+      .eyebrow {
+        margin: 0;
+        color: var(--accent);
+        font: 700 0.72rem/1.1 system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+      }
+
+      .hero {
+        display: grid;
+        grid-template-columns: auto 1fr;
+        gap: 16px;
+        align-items: center;
+      }
+
+      .badge {
+        display: grid;
+        place-items: center;
+        width: 72px;
+        height: 72px;
+        border-radius: 20px;
+        background: linear-gradient(160deg, #f8b85c 0%, #e86b34 100%);
+        color: #fff7ef;
+        font-size: 2rem;
+      }
+
+      h1 {
+        margin: 0;
+        font-size: clamp(1.8rem, 4vw, 2.4rem);
+        line-height: 0.95;
+      }
+
+      .summary {
+        margin: 6px 0 0;
+        color: var(--muted);
+        font-size: 0.98rem;
+      }
+
+      .temperature-card {
+        display: grid;
+        gap: 8px;
+        padding: 18px;
+        border-radius: 22px;
+        border: 1px solid rgba(148, 74, 36, 0.15);
+        background: linear-gradient(180deg, rgba(255, 255, 255, 0.96), rgba(255, 246, 237, 0.92));
+      }
+
+      .temperature-label {
+        color: var(--accent);
+        font: 700 0.74rem/1 system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+      }
+
+      .temperature-value {
+        font-size: clamp(2.4rem, 6vw, 3.6rem);
+        line-height: 0.88;
+      }
+
+      .chips {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+
+      .chip {
+        padding: 8px 12px;
+        border-radius: 999px;
+        background: var(--accent-soft);
+        color: var(--accent);
+        font: 600 0.85rem/1 system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      }
+
+      .advice {
+        margin: 0;
+        padding: 14px 16px;
+        border-radius: 18px;
+        background: rgba(255, 255, 255, 0.76);
+        border: 1px solid rgba(148, 74, 36, 0.12);
+        color: var(--muted);
+      }
+
+      .empty {
+        display: none;
+        padding: 22px;
+        border-radius: 20px;
+        background: rgba(255, 255, 255, 0.76);
+        border: 1px dashed rgba(148, 74, 36, 0.28);
+        color: var(--muted);
+      }
+    </style>
+  </head>
+  <body>
+    <main class="shell">
+      <p class="eyebrow">MCP Apps Weather</p>
+
+      <section class="hero">
+        <div class="badge" id="icon" aria-hidden="true">☀️</div>
+        <div>
+          <h1 id="city">Waiting for weather</h1>
+          <p class="summary" id="summary">
+            ChatGPT will inject tool results here after the weather tool runs.
+          </p>
+        </div>
+      </section>
+
+      <section class="temperature-card">
+        <span class="temperature-label">Current reading</span>
+        <strong class="temperature-value" id="temperature">--</strong>
+        <div class="chips">
+          <span class="chip" id="condition">Condition pending</span>
+          <span class="chip" id="source">Source: MCP tool output</span>
+        </div>
+      </section>
+
+      <p class="advice" id="advice">
+        The widget renders from structured tool data. No separate frontend app is required once ChatGPT loads the template.
+      </p>
+
+      <section class="empty" id="empty">
+        No structured tool data has been received yet.
+      </section>
+    </main>
+
+    <script>
+      const cityEl = document.getElementById("city");
+      const summaryEl = document.getElementById("summary");
+      const temperatureEl = document.getElementById("temperature");
+      const conditionEl = document.getElementById("condition");
+      const adviceEl = document.getElementById("advice");
+      const iconEl = document.getElementById("icon");
+      const emptyEl = document.getElementById("empty");
+
+      function iconFor(condition) {
+        switch ((condition || "").toLowerCase()) {
+          case "sunny":
+            return "☀️";
+          case "cloudy":
+            return "☁️";
+          case "windy":
+            return "🌬️";
+          case "rain":
+            return "🌧️";
+          default:
+            return "🌤️";
+        }
+      }
+
+      function render(payload) {
+        if (!payload || typeof payload !== "object") {
+          emptyEl.style.display = "block";
+          return;
+        }
+
+        emptyEl.style.display = "none";
+
+        const city = payload.city || "Unknown city";
+        const temperature = payload.temperature || "--";
+        const condition = payload.condition || "Unknown";
+        const summary = payload.summary || "Tool result received without a summary.";
+        const advice = payload.advice || "No extra advice was returned.";
+
+        cityEl.textContent = city;
+        summaryEl.textContent = summary;
+        temperatureEl.textContent = temperature;
+        conditionEl.textContent = condition;
+        adviceEl.textContent = advice;
+        iconEl.textContent = iconFor(condition);
+      }
+
+      function readInitialToolOutput() {
+        if (window.openai && window.openai.toolOutput) {
+          render(window.openai.toolOutput);
+        }
+      }
+
+      window.addEventListener(
+        "message",
+        (event) => {
+          if (event.source !== window.parent) return;
+          const message = event.data;
+          if (!message || message.jsonrpc !== "2.0") return;
+          if (message.method !== "ui/notifications/tool-result") return;
+          render(message.params && message.params.structuredContent);
+        },
+        { passive: true }
+      );
+
+      window.addEventListener(
+        "openai:set_globals",
+        (event) => {
+          const globals = event.detail && event.detail.globals;
+          if (!globals) return;
+          render(globals.toolOutput || globals.structuredContent);
+        },
+        { passive: true }
+      );
+
+      readInitialToolOutput();
+    </script>
+  </body>
+</html>
