@@ -1,4 +1,4 @@
-import type { WeatherSandboxResponse } from '~/shared/mcp-sandbox'
+import type { WeatherSandboxResponse } from '#shared/mcp-sandbox'
 import { MCP_WEATHER_TOOL, MCP_WEATHER_URL } from './config'
 
 const WEATHER_MCP_DOCS = [

@@ -1,4 +1,4 @@
-import type { WeatherSandboxRequest } from '~/shared/mcp-sandbox'
+import type { WeatherSandboxRequest } from '#shared/mcp-sandbox'
 import { callWeatherMcp } from '../../utils/mcp/weather-client'
 
 export default defineEventHandler(async (event) => {

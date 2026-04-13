@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { WeatherSandboxResponse } from '~/shared/mcp-sandbox'
+import type { WeatherSandboxResponse } from '#shared/mcp-sandbox'
 
 useHead({
   title: 'MCP Weather Sandbox'
