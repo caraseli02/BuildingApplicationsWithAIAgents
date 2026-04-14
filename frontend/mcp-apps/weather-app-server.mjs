@@ -6,6 +6,65 @@ import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js'
 import { StreamableHTTPServerTransport } from '@modelcontextprotocol/sdk/server/streamableHttp.js'
 import { registerAppResource, RESOURCE_MIME_TYPE } from '@modelcontextprotocol/ext-apps/server'
 import { z } from 'zod'
+import { getWeather } from './get_weather_data.mjs'
+
+/*
+  TODO roadmap for replacing the mock-data payload with a real ChatGPT-like weather card.
+
+  Work in this order:
+  1. Keep using weather-mock-data.json while you redesign the widget shape.
+  2. Once the widget layout is stable, replace getWeather(city) with:
+     - city -> coordinates lookup
+     - forecast API fetch
+     - normalization into the same payload shape
+  3. Keep content[] as a short text fallback for non-UI clients.
+  4. Do not leak provider-specific response shapes into weather-widget.html.
+
+  Official references:
+  - Apps SDK MCP server guide:
+    https://developers.openai.com/apps-sdk/build/mcp-server
+  - Apps SDK UI guide:
+    https://developers.openai.com/apps-sdk/build/chatgpt-ui
+  - Apps SDK examples:
+    https://github.com/openai/openai-apps-sdk-examples
+
+  Note on Open-Meteo:
+  - it works well, but it wants coordinates
+  - the clean production path is "geocode city first, then fetch forecast"
+  - for now, keep city-name development simple by loading weather-mock-data.json
+
+  TODO exercises for learning MCP better:
+
+  SMALL
+  - File to edit: frontend/mcp-apps/weather-mock-data.json
+  - Add one more city entry, for example "mallorca".
+  - Do not change this server file.
+  - Restart the server and verify the widget renders the new city.
+  - Lesson: the MCP tool contract stays stable while the widget is purely data-driven.
+  - Status: complete
+
+  MEDIUM
+  - File to edit: this file
+  - Rename the widget tool to something less generic.
+  - Current result:
+    - tool name: display_weather_widget
+    - title: Display weather widget
+  - Restart the server and refresh the connector in ChatGPT.
+  - Lesson: tool identity and metadata affect routing and how ChatGPT selects tools.
+  - Status: complete
+
+  HARD
+  - File to edit: this file
+  - Split the server into two tools:
+    1. get_weather_data
+    2. display_weather_widget
+  - Both tools can call getWeather(city), but only the widget tool should include:
+    - _meta.ui.resourceUri
+    - _meta["openai/outputTemplate"]
+  - Lesson: the same MCP server can expose machine-friendly tools and UI-bound tools
+    separately.
+  - Status: complete
+*/
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 const PORT = Number(process.env.MCP_APPS_PORT ?? 8787)
@@ -13,54 +72,6 @@ const MCP_PATH = '/mcp'
 const TEMPLATE_URI = 'ui://widget/weather-visual.html'
 const WIDGET_HTML = readFileSync(resolve(__dirname, './weather-widget.html'), 'utf8')
 
-const WEATHER_FIXTURES = {
-  madrid: {
-    city: 'Madrid',
-    temperature: '72°F',
-    condition: 'Sunny',
-    summary: 'Clear skies and dry air make it a straightforward spring afternoon.',
-    advice: 'Good weather for an outdoor walk. You probably do not need a jacket.'
-  },
-  london: {
-    city: 'London',
-    temperature: '48°F',
-    condition: 'Cloudy',
-    summary: 'A cool, overcast window with light variation in the cloud cover.',
-    advice: 'Carry a layer. Conditions are stable, but it still feels cold.'
-  },
-  'san francisco': {
-    city: 'San Francisco',
-    temperature: '62°F',
-    condition: 'Windy',
-    summary: 'Mild temperatures with the usual wind pushing through exposed areas.',
-    advice: 'Bring an extra layer even if the temperature looks comfortable.'
-  },
-  nyc: {
-    city: 'NYC',
-    temperature: '58°F',
-    condition: 'Rain',
-    summary: 'Cool with intermittent rain bands moving through the city.',
-    advice: 'Take an umbrella. Pavement and transit platforms will be slick.'
-  }
-}
-
-function normalizeCity(rawCity) {
-  return rawCity.trim().toLowerCase()
-}
-
-function getWeather(city) {
-  const normalized = normalizeCity(city)
-  const fallbackCity = city.trim() || 'Unknown city'
-  return (
-    WEATHER_FIXTURES[normalized] ?? {
-      city: fallbackCity,
-      temperature: '65°F (approx)',
-      condition: 'Sunny',
-      summary: `No dedicated fixture exists for ${fallbackCity}, so this is the fallback report.`,
-      advice: 'Treat this as placeholder data until you wire a real backend source.'
-    }
-  )
-}
 
 function createWeatherServer() {
   const server = new McpServer(
@@ -89,10 +100,18 @@ function createWeatherServer() {
   }))
 
   server.registerTool(
-    'show_weather_widget',
+    'display_weather_widget',
     {
-      title: 'Show weather widget',
+      title: 'Display weather widget',
       description: 'Return a small structured weather report and render a visual widget for the requested city.',
+      /*
+        This is the UI-bound MCP tool.
+
+        Learning point:
+        - this tool has widget metadata
+        - ChatGPT can render the HTML resource after it runs
+        - use this when you want visible UI in the chat
+      */
       inputSchema: {
         city: z.string().min(1)
       },
@@ -104,14 +123,64 @@ function createWeatherServer() {
       }
     },
     async ({ city }) => {
-      const report = getWeather(city)
+      const report = await getWeather(city)
 
+      /*
+        Keep this split:
+        - structuredContent: full data for the widget
+        - content[]: short text fallback for clients that do not render the widget
+
+        When you upgrade the payload, prefer reading from report.current here,
+        but keep the top-level fields while the current widget still uses them.
+      */
       return {
         structuredContent: report,
         content: [
           {
             type: 'text',
-            text: `${report.city}: ${report.temperature}, ${report.condition}. ${report.summary}`
+            text: `${report.city}: ${report.current?.tempC ?? report.temperature}°C and ${report.current?.condition ?? report.condition}. ${report.current?.summary ?? report.summary}`
+          }
+        ]
+      }
+    }
+  )
+
+  server.registerTool(
+    'get_weather_data',
+    {
+      title: 'Get weather data',
+      description: 'Return a small structured weather report for the requested city.',
+      inputSchema: {
+        city: z.string().min(1)
+      },
+    },
+    async ({ city }) => {
+      const report = await getWeather(city)
+
+      /*
+        This is the data-only MCP tool.
+
+        Learning point:
+        - same backend capability as the widget tool
+        - no UI metadata
+        - useful for plain tool output, agents, or downstream composition
+      */
+      return {
+        structuredContent: report,
+        content: [
+          {
+            type: 'text',
+            text: JSON.stringify(
+              {
+                city: report.city,
+                region: report.region,
+                current: report.current,
+                daily: report.daily,
+                hourly: report.hourly
+              },
+              null,
+              2
+            )
           }
         ]
       }

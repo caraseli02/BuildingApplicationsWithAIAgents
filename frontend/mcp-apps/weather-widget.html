@@ -7,14 +7,19 @@
     <style>
       :root {
         color-scheme: light;
-        font-family: Georgia, "Times New Roman", serif;
-        --ink: #2b2017;
-        --muted: #6a584a;
-        --surface: rgba(255, 252, 247, 0.94);
-        --border: rgba(172, 124, 86, 0.24);
-        --accent: #944a24;
-        --accent-soft: rgba(148, 74, 36, 0.1);
-        --shadow: 0 24px 60px rgba(89, 58, 35, 0.12);
+        font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        --ink: #2b241f;
+        --muted: #6d6258;
+        --surface: rgba(255, 252, 247, 0.96);
+        --surface-strong: rgba(255, 255, 255, 0.98);
+        --border: rgba(173, 128, 92, 0.18);
+        --accent: #9a4d22;
+        --accent-soft: rgba(154, 77, 34, 0.1);
+        --shadow: 0 30px 80px rgba(90, 61, 35, 0.16);
+        --line: #ffffff;
+        --line-shadow: rgba(84, 63, 48, 0.16);
+        --chart-fill-top: rgba(230, 186, 140, 0.2);
+        --chart-fill-bottom: rgba(78, 58, 44, 0.02);
       }
 
       * {
@@ -28,20 +33,21 @@
       }
 
       body {
-        padding: 20px;
+        padding: 18px;
         background:
-          radial-gradient(circle at top left, rgba(255, 219, 183, 0.6), transparent 40%),
-          linear-gradient(180deg, #fffdf8 0%, #f5efe6 100%);
+          radial-gradient(circle at top left, rgba(255, 220, 188, 0.62), transparent 38%),
+          radial-gradient(circle at right center, rgba(252, 238, 207, 0.55), transparent 34%),
+          linear-gradient(180deg, #fffdf8 0%, #f4eee7 100%);
         color: var(--ink);
       }
 
       .shell {
         display: grid;
-        gap: 14px;
-        max-width: 480px;
+        gap: 18px;
+        max-width: 860px;
         margin: 0 auto;
-        padding: 18px;
-        border-radius: 24px;
+        padding: 28px 28px 24px;
+        border-radius: 34px;
         background: var(--surface);
         border: 1px solid var(--border);
         box-shadow: var(--shadow);
@@ -50,83 +56,216 @@
       .eyebrow {
         margin: 0;
         color: var(--accent);
-        font: 700 0.72rem/1.1 system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-        letter-spacing: 0.18em;
+        font: 700 0.75rem/1 system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        letter-spacing: 0.2em;
         text-transform: uppercase;
       }
 
       .hero {
         display: grid;
         grid-template-columns: auto 1fr;
-        gap: 16px;
+        gap: 22px;
         align-items: center;
       }
 
       .badge {
         display: grid;
         place-items: center;
-        width: 72px;
-        height: 72px;
-        border-radius: 20px;
-        background: linear-gradient(160deg, #f8b85c 0%, #e86b34 100%);
+        width: 112px;
+        height: 112px;
+        border-radius: 30px;
+        background: linear-gradient(180deg, #ffb352 0%, #f36b31 100%);
         color: #fff7ef;
-        font-size: 2rem;
+        font-size: 3.2rem;
+        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.28);
       }
 
-      h1 {
-        margin: 0;
-        font-size: clamp(1.8rem, 4vw, 2.4rem);
-        line-height: 0.95;
-      }
-
-      .summary {
-        margin: 6px 0 0;
+      .location-line {
+        margin: 0 0 8px;
         color: var(--muted);
         font-size: 0.98rem;
       }
 
-      .temperature-card {
-        display: grid;
-        gap: 8px;
-        padding: 18px;
-        border-radius: 22px;
-        border: 1px solid rgba(148, 74, 36, 0.15);
-        background: linear-gradient(180deg, rgba(255, 255, 255, 0.96), rgba(255, 246, 237, 0.92));
+      h1 {
+        margin: 0;
+        font-size: clamp(2.8rem, 5vw, 4.2rem);
+        line-height: 0.9;
+        letter-spacing: -0.03em;
       }
 
-      .temperature-label {
+      .summary {
+        margin: 8px 0 0;
+        max-width: 720px;
+        color: var(--muted);
+        font-size: clamp(1.1rem, 2.2vw, 1.35rem);
+        line-height: 1.08;
+      }
+
+      .current-shell {
+        display: grid;
+        gap: 18px;
+        padding: 22px;
+        border-radius: 28px;
+        border: 1px solid rgba(154, 77, 34, 0.15);
+        background: linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(255, 246, 238, 0.88));
+      }
+
+      .section-label {
+        margin: 0;
         color: var(--accent);
-        font: 700 0.74rem/1 system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-        letter-spacing: 0.16em;
+        font: 700 0.86rem/1 system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        letter-spacing: 0.2em;
         text-transform: uppercase;
       }
 
+      .current-grid {
+        display: grid;
+        gap: 14px;
+      }
+
+      .temp-row {
+        display: flex;
+        align-items: flex-start;
+        gap: 16px;
+        flex-wrap: wrap;
+      }
+
       .temperature-value {
-        font-size: clamp(2.4rem, 6vw, 3.6rem);
-        line-height: 0.88;
+        margin: 0;
+        font-size: clamp(4rem, 8vw, 5.8rem);
+        line-height: 0.85;
+        letter-spacing: -0.05em;
+      }
+
+      .units {
+        display: flex;
+        gap: 10px;
+        margin-top: 12px;
+        color: var(--muted);
+        font-size: 1.05rem;
+        font-weight: 600;
       }
 
       .chips {
         display: flex;
         flex-wrap: wrap;
-        gap: 8px;
+        gap: 10px;
       }
 
       .chip {
-        padding: 8px 12px;
+        padding: 10px 14px;
         border-radius: 999px;
         background: var(--accent-soft);
         color: var(--accent);
-        font: 600 0.85rem/1 system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        font-size: 0.9rem;
+        font-weight: 700;
+      }
+
+      .daily-shell,
+      .chart-shell,
+      .advice {
+        padding: 22px;
+        border-radius: 28px;
+        border: 1px solid var(--border);
+        background: var(--surface-strong);
+      }
+
+      .daily-strip {
+        display: grid;
+        grid-auto-flow: column;
+        grid-auto-columns: minmax(88px, 1fr);
+        gap: 12px;
+        margin-top: 18px;
+        overflow-x: auto;
+        padding-bottom: 4px;
+      }
+
+      .day-card {
+        display: grid;
+        justify-items: center;
+        gap: 10px;
+        padding: 16px 12px;
+        border-radius: 22px;
+        background: rgba(58, 53, 48, 0.07);
+        color: var(--ink);
+        min-width: 88px;
+      }
+
+      .day-card.is-active {
+        background: rgba(58, 53, 48, 0.13);
+      }
+
+      .day-label {
+        font-size: 0.98rem;
+        font-weight: 700;
+      }
+
+      .day-icon {
+        font-size: 1.7rem;
+        line-height: 1;
+      }
+
+      .day-high {
+        font-size: 1.2rem;
+        font-weight: 700;
+      }
+
+      .day-low {
+        color: var(--muted);
+        font-size: 0.95rem;
+      }
+
+      .chart {
+        width: 100%;
+        height: auto;
+        margin-top: 18px;
+        display: block;
+      }
+
+      .chart-path-shadow {
+        fill: none;
+        stroke: var(--line-shadow);
+        stroke-width: 7;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+      }
+
+      .chart-path {
+        fill: none;
+        stroke: var(--line);
+        stroke-width: 4;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+      }
+
+      .chart-area {
+        fill: url(#areaFill);
+      }
+
+      .chart-point {
+        fill: var(--surface-strong);
+        stroke: rgba(84, 63, 48, 0.55);
+        stroke-width: 3;
+      }
+
+      .chart-value {
+        fill: var(--line);
+        font-size: 19px;
+        font-weight: 700;
+        text-anchor: middle;
+      }
+
+      .chart-label {
+        fill: var(--muted);
+        font-size: 18px;
+        text-anchor: middle;
       }
 
       .advice {
         margin: 0;
-        padding: 14px 16px;
-        border-radius: 18px;
-        background: rgba(255, 255, 255, 0.76);
-        border: 1px solid rgba(148, 74, 36, 0.12);
         color: var(--muted);
+        font-size: 1.02rem;
+        line-height: 1.4;
       }
 
       .empty {
@@ -137,6 +276,32 @@
         border: 1px dashed rgba(148, 74, 36, 0.28);
         color: var(--muted);
       }
+
+      @media (max-width: 720px) {
+        body {
+          padding: 12px;
+        }
+
+        .shell {
+          padding: 18px;
+          border-radius: 24px;
+        }
+
+        .hero {
+          grid-template-columns: 1fr;
+        }
+
+        .badge {
+          width: 88px;
+          height: 88px;
+          border-radius: 24px;
+          font-size: 2.5rem;
+        }
+
+        .daily-strip {
+          grid-auto-columns: minmax(82px, 82px);
+        }
+      }
     </style>
   </head>
   <body>
@@ -146,20 +311,41 @@
       <section class="hero">
         <div class="badge" id="icon" aria-hidden="true">☀️</div>
         <div>
-          <h1 id="city">Waiting for weather</h1>
+          <p class="location-line" id="region">Waiting for weather</p>
+          <h1 id="city">Loading</h1>
           <p class="summary" id="summary">
             ChatGPT will inject tool results here after the weather tool runs.
           </p>
         </div>
       </section>
 
-      <section class="temperature-card">
-        <span class="temperature-label">Current reading</span>
-        <strong class="temperature-value" id="temperature">--</strong>
-        <div class="chips">
-          <span class="chip" id="condition">Condition pending</span>
-          <span class="chip" id="source">Source: MCP tool output</span>
+      <section class="current-shell">
+        <p class="section-label">Current reading</p>
+        <div class="current-grid">
+          <div class="temp-row">
+            <strong class="temperature-value" id="temperature">--</strong>
+            <div class="units">
+              <span id="unit-c">°C</span>
+              <span>/</span>
+              <span id="unit-f">°F</span>
+            </div>
+          </div>
+
+          <div class="chips">
+            <span class="chip" id="condition">Condition pending</span>
+            <span class="chip">Source: MCP tool output</span>
+          </div>
         </div>
+      </section>
+
+      <section class="daily-shell">
+        <p class="section-label">Forecast</p>
+        <div class="daily-strip" id="daily-strip"></div>
+      </section>
+
+      <section class="chart-shell">
+        <p class="section-label">Temperature</p>
+        <div id="hourly-chart"></div>
       </section>
 
       <p class="advice" id="advice">
@@ -173,12 +359,17 @@
 
     <script>
       const cityEl = document.getElementById("city");
+      const regionEl = document.getElementById("region");
       const summaryEl = document.getElementById("summary");
       const temperatureEl = document.getElementById("temperature");
+      const unitCEl = document.getElementById("unit-c");
+      const unitFEl = document.getElementById("unit-f");
       const conditionEl = document.getElementById("condition");
       const adviceEl = document.getElementById("advice");
       const iconEl = document.getElementById("icon");
       const emptyEl = document.getElementById("empty");
+      const dailyStripEl = document.getElementById("daily-strip");
+      const hourlyChartEl = document.getElementById("hourly-chart");
 
       function iconFor(condition) {
         switch ((condition || "").toLowerCase()) {
@@ -190,9 +381,98 @@
             return "🌬️";
           case "rain":
             return "🌧️";
+          case "partly-cloudy":
+          case "partly cloudy":
+            return "⛅";
           default:
             return "🌤️";
         }
+      }
+
+      function renderDaily(daily) {
+        if (!Array.isArray(daily) || daily.length === 0) {
+          dailyStripEl.innerHTML = "";
+          return;
+        }
+
+        dailyStripEl.innerHTML = daily
+          .map((day, index) => {
+            const dayLabel = day.day || "--";
+            const icon = iconFor(day.icon || day.condition);
+            const high = typeof day.highC === "number" ? `${day.highC}°` : "--";
+            const low = typeof day.lowC === "number" ? `${day.lowC}°` : "--";
+            return `
+              <article class="day-card ${index === 0 ? "is-active" : ""}">
+                <div class="day-label">${dayLabel}</div>
+                <div class="day-icon" aria-hidden="true">${icon}</div>
+                <div class="day-high">${high}</div>
+                <div class="day-low">${low}</div>
+              </article>
+            `;
+          })
+          .join("");
+      }
+
+      function createHourlyChartMarkup(hourly) {
+        if (!Array.isArray(hourly) || hourly.length === 0) {
+          return "";
+        }
+
+        const width = 680;
+        const height = 250;
+        const paddingLeft = 42;
+        const paddingRight = 42;
+        const paddingTop = 36;
+        const paddingBottom = 58;
+        const chartWidth = width - paddingLeft - paddingRight;
+        const chartHeight = height - paddingTop - paddingBottom;
+
+        const temps = hourly.map((item) => item.tempC);
+        const minTemp = Math.min(...temps);
+        const maxTemp = Math.max(...temps);
+        const range = Math.max(maxTemp - minTemp, 1);
+        const stepX = hourly.length > 1 ? chartWidth / (hourly.length - 1) : 0;
+
+        const points = hourly.map((item, index) => {
+          const x = paddingLeft + stepX * index;
+          const normalizedY = (item.tempC - minTemp) / range;
+          const y = paddingTop + chartHeight - normalizedY * chartHeight;
+          return { x, y, label: item.label, tempC: item.tempC };
+        });
+
+        const polylinePoints = points.map((point) => `${point.x},${point.y}`).join(" ");
+        const areaPoints = [
+          `${points[0].x},${height - paddingBottom}`,
+          ...points.map((point) => `${point.x},${point.y}`),
+          `${points[points.length - 1].x},${height - paddingBottom}`
+        ].join(" ");
+
+        const pointMarkers = points
+          .map((point) => {
+            return `
+              <g>
+                <circle class="chart-point" cx="${point.x}" cy="${point.y}" r="8"></circle>
+                <text class="chart-value" x="${point.x}" y="${point.y - 20}">${point.tempC}°</text>
+                <text class="chart-label" x="${point.x}" y="${height - 16}">${point.label}</text>
+              </g>
+            `;
+          })
+          .join("");
+
+        return `
+          <svg class="chart" viewBox="0 0 ${width} ${height}" role="img" aria-label="Hourly temperature forecast">
+            <defs>
+              <linearGradient id="areaFill" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="${getComputedStyle(document.documentElement).getPropertyValue('--chart-fill-top').trim()}" />
+                <stop offset="100%" stop-color="${getComputedStyle(document.documentElement).getPropertyValue('--chart-fill-bottom').trim()}" />
+              </linearGradient>
+            </defs>
+            <polygon class="chart-area" points="${areaPoints}"></polygon>
+            <polyline class="chart-path-shadow" points="${polylinePoints}"></polyline>
+            <polyline class="chart-path" points="${polylinePoints}"></polyline>
+            ${pointMarkers}
+          </svg>
+        `;
       }
 
       function render(payload) {
@@ -204,17 +484,28 @@
         emptyEl.style.display = "none";
 
         const city = payload.city || "Unknown city";
-        const temperature = payload.temperature || "--";
-        const condition = payload.condition || "Unknown";
-        const summary = payload.summary || "Tool result received without a summary.";
+        const region = payload.region || "Unknown region";
+        const current = payload.current && typeof payload.current === "object" ? payload.current : {};
+        const condition = current.condition || payload.condition || "Unknown";
+        const summary =
+          current.summary || payload.summary || "Tool result received without a summary.";
         const advice = payload.advice || "No extra advice was returned.";
+        const tempC = typeof current.tempC === "number" ? current.tempC : null;
+        const tempF = typeof current.tempF === "number" ? current.tempF : null;
 
         cityEl.textContent = city;
+        regionEl.textContent = region;
         summaryEl.textContent = summary;
-        temperatureEl.textContent = temperature;
         conditionEl.textContent = condition;
         adviceEl.textContent = advice;
         iconEl.textContent = iconFor(condition);
+
+        temperatureEl.textContent = tempC !== null ? `${tempC}°` : payload.temperature || "--";
+        unitCEl.textContent = tempC !== null ? "C" : "°C";
+        unitFEl.textContent = tempF !== null ? `F (${tempF}°)` : "°F";
+
+        renderDaily(payload.daily);
+        hourlyChartEl.innerHTML = createHourlyChartMarkup(payload.hourly);
       }
 
       function readInitialToolOutput() {

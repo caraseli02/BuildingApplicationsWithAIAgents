@@ -1,0 +1,336 @@
+{
+  "mallorca": {
+    "city": "Mallorca",
+    "region": "Balearic Islands, Spain",
+    "temperature": "78°F",
+    "condition": "Sunny",
+    "summary": "Perfect beach weather!",
+    "advice": "Perfect beach weather!",
+    "current": {
+      "tempC": 25,
+      "tempF": 78,
+      "condition": "Sunny",
+      "summary": "Perfect beach weather!"
+    },
+    "daily": [
+      {
+        "day": "Tue",
+        "icon": "sunny",
+        "highC": 21,
+        "lowC": 8
+      },
+      {
+        "day": "Wed",
+        "icon": "sunny",
+        "highC": 24,
+        "lowC": 10
+      },
+      {
+        "day": "Thu",
+        "icon": "sunny",
+        "highC": 25,
+        "lowC": 11
+      },
+      {
+        "day": "Fri",
+        "icon": "sunny",
+        "highC": 26,
+        "lowC": 13
+      },
+      {
+        "day": "Sat",
+        "icon": "sunny",
+        "highC": 27,
+        "lowC": 13
+      },
+      {
+        "day": "Sun",
+        "icon": "sunny",
+        "highC": 28,
+        "lowC": 13
+      }
+    ],
+    "hourly": [
+      {
+        "label": "1pm",
+        "tempC": 25
+      },
+      {
+        "label": "4pm",
+        "tempC": 26
+      },
+      {
+        "label": "7pm",
+        "tempC": 24
+      },
+      {
+        "label": "10pm",
+        "tempC": 22
+      },
+      {
+        "label": "1am",
+        "tempC": 20
+      },
+      {
+        "label": "4am",
+        "tempC": 18
+      },
+      {
+        "label": "7am",
+        "tempC": 16
+      },
+      {
+        "label": "10am",
+        "tempC": 10
+      }
+    ]
+  },
+  "madrid": {
+    "city": "Madrid",
+    "region": "Community of Madrid, Spain",
+    "temperature": "72°F",
+    "condition": "Sunny",
+    "summary": "Clear skies and dry air make it a straightforward spring afternoon.",
+    "advice": "Good weather for an outdoor walk. You probably do not need a jacket.",
+    "current": {
+      "tempC": 22,
+      "tempF": 72,
+      "condition": "Sunny",
+      "summary": "Clear skies and dry air make it a straightforward spring afternoon."
+    },
+    "daily": [
+      {
+        "day": "Tue",
+        "icon": "partly-cloudy",
+        "highC": 21,
+        "lowC": 8
+      },
+      {
+        "day": "Wed",
+        "icon": "sunny",
+        "highC": 24,
+        "lowC": 10
+      },
+      {
+        "day": "Thu",
+        "icon": "partly-cloudy",
+        "highC": 25,
+        "lowC": 11
+      },
+      {
+        "day": "Fri",
+        "icon": "partly-cloudy",
+        "highC": 26,
+        "lowC": 13
+      },
+      {
+        "day": "Sat",
+        "icon": "partly-cloudy",
+        "highC": 27,
+        "lowC": 13
+      },
+      {
+        "day": "Sun",
+        "icon": "partly-cloudy",
+        "highC": 28,
+        "lowC": 13
+      }
+    ],
+    "hourly": [
+      {
+        "label": "1pm",
+        "tempC": 15
+      },
+      {
+        "label": "4pm",
+        "tempC": 20
+      },
+      {
+        "label": "7pm",
+        "tempC": 20
+      },
+      {
+        "label": "10pm",
+        "tempC": 17
+      },
+      {
+        "label": "1am",
+        "tempC": 13
+      },
+      {
+        "label": "4am",
+        "tempC": 11
+      },
+      {
+        "label": "7am",
+        "tempC": 8
+      },
+      {
+        "label": "10am",
+        "tempC": 12
+      }
+    ]
+  },
+  "london": {
+    "city": "London",
+    "region": "England, United Kingdom",
+    "temperature": "48°F",
+    "condition": "Cloudy",
+    "summary": "A cool, overcast window with light variation in the cloud cover.",
+    "advice": "Carry a layer. Conditions are stable, but it still feels cold.",
+    "current": {
+      "tempC": 9,
+      "tempF": 48,
+      "condition": "Cloudy",
+      "summary": "A cool, overcast window with light variation in the cloud cover."
+    },
+    "daily": [
+      {
+        "day": "Tue",
+        "icon": "cloudy",
+        "highC": 9,
+        "lowC": 5
+      },
+      {
+        "day": "Wed",
+        "icon": "rain",
+        "highC": 11,
+        "lowC": 6
+      },
+      {
+        "day": "Thu",
+        "icon": "cloudy",
+        "highC": 12,
+        "lowC": 7
+      },
+      {
+        "day": "Fri",
+        "icon": "partly-cloudy",
+        "highC": 13,
+        "lowC": 8
+      }
+    ],
+    "hourly": [
+      {
+        "label": "1pm",
+        "tempC": 9
+      },
+      {
+        "label": "4pm",
+        "tempC": 10
+      },
+      {
+        "label": "7pm",
+        "tempC": 9
+      },
+      {
+        "label": "10pm",
+        "tempC": 7
+      }
+    ]
+  },
+  "san francisco": {
+    "city": "San Francisco",
+    "region": "California, United States",
+    "temperature": "62°F",
+    "condition": "Windy",
+    "summary": "Mild temperatures with the usual wind pushing through exposed areas.",
+    "advice": "Bring an extra layer even if the temperature looks comfortable.",
+    "current": {
+      "tempC": 17,
+      "tempF": 62,
+      "condition": "Windy",
+      "summary": "Mild temperatures with the usual wind pushing through exposed areas."
+    },
+    "daily": [
+      {
+        "day": "Tue",
+        "icon": "windy",
+        "highC": 17,
+        "lowC": 11
+      },
+      {
+        "day": "Wed",
+        "icon": "partly-cloudy",
+        "highC": 18,
+        "lowC": 12
+      },
+      {
+        "day": "Thu",
+        "icon": "partly-cloudy",
+        "highC": 18,
+        "lowC": 12
+      }
+    ],
+    "hourly": [
+      {
+        "label": "1pm",
+        "tempC": 16
+      },
+      {
+        "label": "4pm",
+        "tempC": 17
+      },
+      {
+        "label": "7pm",
+        "tempC": 15
+      },
+      {
+        "label": "10pm",
+        "tempC": 13
+      }
+    ]
+  },
+  "nyc": {
+    "city": "NYC",
+    "region": "New York, United States",
+    "temperature": "58°F",
+    "condition": "Rain",
+    "summary": "Cool with intermittent rain bands moving through the city.",
+    "advice": "Take an umbrella. Pavement and transit platforms will be slick.",
+    "current": {
+      "tempC": 14,
+      "tempF": 58,
+      "condition": "Rain",
+      "summary": "Cool with intermittent rain bands moving through the city."
+    },
+    "daily": [
+      {
+        "day": "Tue",
+        "icon": "rain",
+        "highC": 14,
+        "lowC": 8
+      },
+      {
+        "day": "Wed",
+        "icon": "cloudy",
+        "highC": 16,
+        "lowC": 9
+      },
+      {
+        "day": "Thu",
+        "icon": "partly-cloudy",
+        "highC": 18,
+        "lowC": 11
+      }
+    ],
+    "hourly": [
+      {
+        "label": "1pm",
+        "tempC": 13
+      },
+      {
+        "label": "4pm",
+        "tempC": 14
+      },
+      {
+        "label": "7pm",
+        "tempC": 12
+      },
+      {
+        "label": "10pm",
+        "tempC": 10
+      }
+    ]
+  }
+}

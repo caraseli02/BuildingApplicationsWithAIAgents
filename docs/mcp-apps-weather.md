@@ -6,6 +6,7 @@ Files:
 
 - server: [`frontend/mcp-apps/weather-app-server.mjs`](/Users/vladislavcaraseli/Documents/BuildingApplicationsWithAIAgents/frontend/mcp-apps/weather-app-server.mjs)
 - widget HTML: [`frontend/mcp-apps/weather-widget.html`](/Users/vladislavcaraseli/Documents/BuildingApplicationsWithAIAgents/frontend/mcp-apps/weather-widget.html)
+- mock data: [`frontend/mcp-apps/weather-mock-data.json`](/Users/vladislavcaraseli/Documents/BuildingApplicationsWithAIAgents/frontend/mcp-apps/weather-mock-data.json)
 
 ## What this example is for
 
@@ -71,7 +72,7 @@ npx @modelcontextprotocol/inspector@latest --server-url http://localhost:8787/mc
 
 Use Inspector to verify:
 
-- the tool `show_weather_widget` exists
+- the tools `display_weather_widget` and `get_weather_data` exist
 - the server returns `structuredContent`
 
 Inspector is useful for tool validation. The **real widget UI** is meant to appear in ChatGPT.
@@ -110,7 +111,7 @@ https://your-subdomain.ngrok.app/mcp
 5. Open a new chat, add the connector, and prompt something like:
 
 ```text
-Show me the weather widget for Madrid.
+Use the display_weather_widget tool and render the weather widget for Madrid.
 ```
 
 If ChatGPT decides to call the tool, the card from [`weather-widget.html`](/Users/vladislavcaraseli/Documents/BuildingApplicationsWithAIAgents/frontend/mcp-apps/weather-widget.html) should render inline in the chat.
@@ -124,7 +125,7 @@ Work through these in order:
 3. Prompt for the widget explicitly, for example:
 
 ```text
-Use the show_weather_widget tool and show me the weather widget for Madrid.
+Use the display_weather_widget tool and show me the weather widget for Madrid.
 ```
 
 4. If ChatGPT only narrates text, inspect the tool in your connector settings and confirm it still exposes:
@@ -136,17 +137,67 @@ Use the show_weather_widget tool and show me the weather widget for Madrid.
 
 If you want to keep iterating on this example:
 
-- edit the fixture data in [`frontend/mcp-apps/weather-app-server.mjs`](/Users/vladislavcaraseli/Documents/BuildingApplicationsWithAIAgents/frontend/mcp-apps/weather-app-server.mjs)
+- edit the city payloads in [`frontend/mcp-apps/weather-mock-data.json`](/Users/vladislavcaraseli/Documents/BuildingApplicationsWithAIAgents/frontend/mcp-apps/weather-mock-data.json)
+- use [`frontend/mcp-apps/weather-app-server.mjs`](/Users/vladislavcaraseli/Documents/BuildingApplicationsWithAIAgents/frontend/mcp-apps/weather-app-server.mjs) as the normalization boundary
 - edit the visual layout in [`frontend/mcp-apps/weather-widget.html`](/Users/vladislavcaraseli/Documents/BuildingApplicationsWithAIAgents/frontend/mcp-apps/weather-widget.html)
 - refresh the connector in ChatGPT after changing tool metadata
 
+## Build-it-yourself roadmap
+
+The next-step instructions now live directly inside the files as comments:
+
+- [`frontend/mcp-apps/weather-app-server.mjs`](/Users/vladislavcaraseli/Documents/BuildingApplicationsWithAIAgents/frontend/mcp-apps/weather-app-server.mjs)
+  This file now explains how to:
+  - load city data from a separate mock-data file
+  - replace mock data with a real weather fetch later
+  - normalize provider data into a richer `structuredContent` shape
+  - keep `content[]` as a text fallback
+
+- [`frontend/mcp-apps/weather-widget.html`](/Users/vladislavcaraseli/Documents/BuildingApplicationsWithAIAgents/frontend/mcp-apps/weather-widget.html)
+  This file now explains how to:
+  - replace the simple card with a larger forecast layout
+  - render daily forecast items
+  - build the hourly graph with SVG
+  - keep rendering logic separated from server data fetching
+
+Use the file comments first, then follow the official references listed above while implementing.
+
+## Learning exercises
+
+These are also embedded as `TODO` comments in
+[`frontend/mcp-apps/weather-app-server.mjs`](/Users/vladislavcaraseli/Documents/BuildingApplicationsWithAIAgents/frontend/mcp-apps/weather-app-server.mjs).
+
+### Small
+
+- Edit [`frontend/mcp-apps/weather-mock-data.json`](/Users/vladislavcaraseli/Documents/BuildingApplicationsWithAIAgents/frontend/mcp-apps/weather-mock-data.json)
+- Add a new city, restart the server, and render that city in ChatGPT
+- Goal: learn that the widget is data-driven and the tool contract does not need to change
+
+### Medium
+
+- Edit [`frontend/mcp-apps/weather-app-server.mjs`](/Users/vladislavcaraseli/Documents/BuildingApplicationsWithAIAgents/frontend/mcp-apps/weather-app-server.mjs)
+- Rename the widget tool and refresh the connector
+- Goal: learn how tool metadata and tool identity affect ChatGPT routing
+- Current result: complete
+- Current widget tool name: `display_weather_widget`
+
+### Hard
+
+- Edit [`frontend/mcp-apps/weather-app-server.mjs`](/Users/vladislavcaraseli/Documents/BuildingApplicationsWithAIAgents/frontend/mcp-apps/weather-app-server.mjs)
+- Split the single tool into:
+  - `get_weather_data`
+  - `display_weather_widget`
+- Goal: learn the difference between a data-only MCP tool and a UI-bound MCP tool
+- Current result: complete
+
 ## Recommended next improvement
 
-This is a single-tool render example for learning.
-
-If you want a more production-like pattern, split it into:
+This example now already uses the recommended split:
 
 - one data tool that only returns weather data
-- one render tool that only owns the widget
+- one render tool that owns the widget path
 
-That matches the decoupled pattern recommended in the Apps SDK docs and makes re-render behavior easier to control.
+The next improvement is not architectural. It is polish:
+
+- tighten CSP metadata so the `CSP off` badge goes away
+- replace mock weather data with a real provider
