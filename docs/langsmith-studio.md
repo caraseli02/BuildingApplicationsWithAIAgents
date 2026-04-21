@@ -57,14 +57,17 @@ Per LangChain’s docs, with tracing disabled no data leaves your local server.
 
 ## Agent Server
 
-This repo now includes a root [langgraph.json](../langgraph.json) pointing Studio at both the ecommerce customer support graph and the short-term memory learning example:
+This repo now includes a root [langgraph.json](../langgraph.json) pointing Studio at the main learning graphs:
 
 ```json
 {
   "dependencies": ["."],
   "graphs": {
     "ecommerce_support": "./src/frameworks/langgraph_agents/ecommerce_customer_support/customer_support_agent.py:graph",
-    "short_term_memory": "./src/frameworks/langgraph_agents/short_term_memory.py:graph"
+    "short_term_memory": "./src/frameworks/langgraph_agents/short_term_memory.py:graph",
+    "reflexion": "./src/frameworks/langgraph_agents/reflexion.py:graph",
+    "supply_chain_single": "./src/frameworks/langgraph_agents/supply_chain/supply_chain_logistics_agent.py:graph",
+    "supply_chain_multi": "./src/frameworks/langgraph_agents/supply_chain/supply_chain_logistics_multi_agent.py:graph"
   },
   "env": ".env"
 }
@@ -131,6 +134,71 @@ What to inspect:
 - the remembered context comes from the LangGraph server's built-in thread persistence in Studio, not from a more complex graph shape
 
 Note: the CLI demo in `short_term_memory.py` still uses `MemorySaver()` to teach the concept explicitly, but the Studio-exported graph must stay free of a custom checkpointer because LangGraph API manages persistence itself.
+
+## Chapter 5 Comparison Run
+
+For the single-agent vs multi-agent logistics comparison, Studio now exposes:
+
+- `supply_chain_single`
+- `supply_chain_multi`
+
+Use the same input for both so the graph shape difference is obvious.
+
+Recommended operation payload:
+
+```json
+{
+  "operation_id": "OP-12345",
+  "type": "inventory_management",
+  "priority": "high",
+  "location": "Warehouse A"
+}
+```
+
+Recommended user prompt:
+
+- `"We're running critically low on SKU-12345. Current stock is 50 units but we have 200 units on backorder. What's our reorder strategy?"`
+
+What to inspect in `supply_chain_single`:
+
+- one `assistant` node handles both reasoning and tool use
+- tool calls happen inside that single node
+- there is no explicit routing node before execution
+
+What to inspect in `supply_chain_multi`:
+
+- `supervisor` runs first
+- Studio then branches into one specialist node such as `inventory`
+- the selected specialist performs tool calls after routing is already decided
+
+Best comparison prompt after the inventory run:
+
+- `"A cold-chain shipment from Valencia is delayed and one container may have spoiled. What should we do next?"`
+
+That second prompt tends to route the multi-agent graph to `transportation`, which makes the supervisor-specialist split easier to see visually.
+
+## Reflexion Run
+
+Studio also exposes the `reflexion` graph so you can inspect a critique-and-improve flow before moving on to heavier multi-agent orchestration.
+
+Recommended input:
+
+```json
+{
+  "messages": [
+    {
+      "type": "human",
+      "content": "You will be given the history of a past experience in which you were placed in an environment and given a task to complete. You were unsuccessful in completing the task. Do not summarize your environment, but rather think about the strategy and path you took to attempt to complete the task. Devise a concise, new plan of action that accounts for your mistake with reference to specific actions that you should have taken. For example, if you tried A and B but forgot C, then devise a plan to achieve C with environment-specific actions. You will need this later when you are solving the same task. Your response must: start with \"Plan:\", include no more than 4 bullet points, mention the wrong product choice, mention the price constraint, include one concrete next search query.\n\nInstruction:\ni am looking for dairy free and apple variety pack of chips, and price lower than 30.00 dollars\n[Search]\n\nAction: search[dairy free and apple variety pack of chips]\nObservation:\n[Back to Search]\nPage 1 (Total results: 50)\n[Next >]\n[B07HRFJWP8]\nEnjoy Life Foods Soft Baked Ovals, Breakfast Bars, Nut Free Bars, Soy Free, Dairy Free, Non GMO, Gluten Free, Vegan, Variety Pack, 4 Boxes (20 Bars Total)\n$100.0\n[B01KMHY5PG]\nEnjoy Life Soft Baked Chewy Bars, Variety Pack, Nut Free Bars, Soy Free, Dairy Free, Gluten Free, 6 Boxes (30 Total Bars)\n$21.49\n[B008D2X8C4]\nEnjoy Life Lentil Chips Variety Pack, Dairy Free Chips, Soy Free, Nut Free, Non GMO, Vegan, Gluten Free, 24 Bags (0.8 oz)\n$100.0\n\nAction: think[The first two items are not what I want. The third item is the dairy free and apple variety pack of chips I want.]\nObservation: OK.\n\nAction: click[B008D2X8C4]\nObservation:\n[Back to Search]\n[< Prev]\nflavor name [dill and sour cream][garlic & parmesan][light sea salt][margherita pizza][thai chili lime][variety pack]\nsize [0.8 ounce (pack of 24)][4 ounce (pack of 12)]\nPrice: $100.0\nRating: N.A.\n[Description]\n[Features]\n[Reviews]\n[Buy Now]\n\nAction: think[The item has options 'variety pack' and '0.8 ounce (pack of 24)' and seems good to buy.]\nObservation: OK.\n\nAction: click[variety pack]\nObservation: You have clicked variety pack.\n\nAction: click[0.8 ounce (pack of 24)]\nObservation: You have clicked 0.8 ounce (pack of 24).\n\nAction: click[Buy Now]\n\nSTATUS: FAIL\n\nPlan:\n"
+    }
+  ]
+}
+```
+
+What to inspect:
+
+- the graph shape is still just one `reflexion` node
+- the multi-step behavior is coming from the prompt asking for critique and repair, not from multiple routing nodes
+- this is different from `supply_chain_multi`, where the graph shape itself encodes role assignment
 
 ## Troubleshooting
 

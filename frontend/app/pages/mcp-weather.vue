@@ -88,6 +88,15 @@ const submitWeatherLookup = async () => {
           {{ response.message }}
         </p>
 
+        <div class="panel request-meta">
+          <p class="eyebrow">Request correlation</p>
+          <p class="request-meta__label">Request ID</p>
+          <p class="mcp-mono">{{ response.requestId }}</p>
+          <p class="field-hint">
+            Use this ID to match the browser action to the Nuxt route log, MCP client log, and MCP weather server log.
+          </p>
+        </div>
+
         <div v-if="response.answer" class="summary-quote">
           <p class="eyebrow">Server response</p>
           <p class="summary-quote__text">{{ response.answer }}</p>

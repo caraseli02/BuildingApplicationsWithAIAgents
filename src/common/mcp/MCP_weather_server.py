@@ -21,9 +21,13 @@ server = FastMCP("weather-server", host="127.0.0.1", port=8000)
 
 
 @server.tool(name="weather", description="Return a dummy weather report for a city.")
-def weather(query: str) -> str:
+def weather(query: str, request_id: str | None = None) -> str:
     city = extract_city(query) or "unknown"
     temp = DUMMY_TEMPS.get(city, "65°F (approx)")
+    if request_id:
+        print(f"[MCP weather][{request_id}] query={query!r} city={city!r} temp={temp!r}")
+    else:
+        print(f"[MCP weather] query={query!r} city={city!r} temp={temp!r}")
     return f"The current temperature in {city.title()} is {temp}."
 
 

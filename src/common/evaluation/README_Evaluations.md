@@ -2,6 +2,49 @@
 
 This document explains how to run batch evaluations for our AI agents across different domains.
 
+## Visualizing Scenarios In LangSmith
+
+If you want to inspect the scenario set in a UI instead of only in terminal output, import one of the repo JSONL files into a LangSmith dataset first.
+
+From the repo root:
+
+```bash
+source venv/bin/activate
+set -a
+source .env
+set +a
+python -m src.common.evaluation.langsmith_dataset_import \
+  --dataset-file src/common/evaluation/scenarios/ecommerce_customer_support_evaluation_set.jsonl \
+  --dataset-name ecommerce-customer-support-evals
+```
+
+To import smaller sample datasets for the remaining scenario files:
+
+```bash
+python -m src.common.evaluation.langsmith_bulk_import \
+  --scenarios-dir src/common/evaluation/scenarios \
+  --dataset-prefix repo-evals \
+  --max-examples 10 \
+  --exclude ecommerce_customer_support_evaluation_set
+```
+
+That creates separate LangSmith datasets for each remaining scenario file, capped at 10 examples each.
+
+Then:
+
+1. Open LangSmith and go to `Datasets & Experiments`.
+2. Open the dataset to inspect the examples visually.
+3. If your local Studio server is running, open Studio and click `Run experiment`.
+4. Select the imported dataset and run it against the matching assistant.
+
+This gives you a visual way to inspect:
+
+- the raw scenarios
+- expected outputs
+- experiment rows
+- failures and regressions
+- per-example traces
+
 ## Overview
 
 The evaluation framework supports multiple agent types with standardized metrics:

@@ -2,7 +2,10 @@
   "dependencies": ["."],
   "graphs": {
     "ecommerce_support": "./src/frameworks/langgraph_agents/ecommerce_customer_support/customer_support_agent.py:graph",
-    "short_term_memory": "./src/frameworks/langgraph_agents/short_term_memory.py:graph"
+    "short_term_memory": "./src/frameworks/langgraph_agents/short_term_memory.py:graph",
+    "reflexion": "./src/frameworks/langgraph_agents/reflexion.py:graph",
+    "supply_chain_single": "./src/frameworks/langgraph_agents/supply_chain/supply_chain_logistics_agent.py:graph",
+    "supply_chain_multi": "./src/frameworks/langgraph_agents/supply_chain/supply_chain_logistics_multi_agent.py:graph"
   },
   "env": ".env"
 }

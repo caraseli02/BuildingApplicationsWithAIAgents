@@ -93,14 +93,13 @@ builder.set_entry_point("reflexion")
 builder.add_edge("reflexion", END)
 graph = builder.compile()
 
-result = graph.invoke(
-    {
-        "messages": [
-            HumanMessage(
-                reflexion_prompt
-            )
-        ]
-    }
-)
-reflections.append(result)
-print(result)
+if __name__ == "__main__":
+    result = graph.invoke(
+        {
+            "messages": [
+                HumanMessage(reflexion_prompt)
+            ]
+        }
+    )
+    reflections.append(result)
+    print(result)

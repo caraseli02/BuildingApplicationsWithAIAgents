@@ -9,6 +9,7 @@ export interface WeatherSandboxRequest {
 
 export interface WeatherSandboxResponse {
   status: 'todo' | 'ok'
+  requestId: string
   city: string
   answer: string | null
   message: string

@@ -9,7 +9,10 @@ Current handoff:
 - Chapter 2 is complete enough to move on
 - Chapter 3 is complete enough to move on
 - Chapter 4 is complete enough to move on
-- current extension: Nuxt MCP weather sandbox works, and a ChatGPT-visible MCP Apps weather widget is scaffolded
+- Chapter 5 is complete enough to move on
+- Chapter 6 is complete enough to move on
+- current extension: Nuxt MCP weather sandbox works end to end with request-ID correlation across the route, MCP client, and MCP weather server
+- current extension: LangSmith datasets can now be imported from the repo JSONL evaluation files for visual inspection and Studio experiments
 - baseline test command passed locally
 
 Begin from the **Next Step** section below, then continue with [LEARNING_PLAN.md](LEARNING_PLAN.md).
@@ -40,17 +43,18 @@ Open:
 - [mcp-weather.vue](frontend/app/pages/mcp-weather.vue)
 - [weather.post.ts](frontend/server/api/mcp/weather.post.ts)
 - [weather-client.ts](frontend/server/utils/mcp/weather-client.ts)
-- [weather-app-server.mjs](frontend/mcp-apps/weather-app-server.mjs)
-- [weather-widget.html](frontend/mcp-apps/weather-widget.html)
-- [docs/mcp-apps-weather.md](docs/mcp-apps-weather.md)
-- [frontend README](frontend/README.md)
+- [MCP_weather_server.py](src/common/mcp/MCP_weather_server.py)
+- [langsmith_dataset_import.py](src/common/evaluation/langsmith_dataset_import.py)
+- [langsmith_bulk_import.py](src/common/evaluation/langsmith_bulk_import.py)
+- [README_Evaluations.md](src/common/evaluation/README_Evaluations.md)
+- [docs/langsmith-studio.md](docs/langsmith-studio.md)
 
 Resume from here:
 
 - the Nuxt-side MCP weather client is already working
-- the next learning step is to understand the difference between a local app UI and a ChatGPT-visible MCP Apps widget
-- run the Apps SDK weather server, connect it from ChatGPT, and trace how the widget resource gets rendered from tool output
-- use `docs/mcp-apps-weather.md` as the runbook
+- the MCP weather path now carries a `requestId` from the Nuxt route into the MCP client and Python MCP server logs
+- the next learning step is to keep the capstone loop tight: correlate one request end to end, then inspect or extend the LangSmith evaluation datasets visually
+- use `src/common/evaluation/README_Evaluations.md` as the runbook for dataset import and LangSmith UI inspection
 
 ## Companion Resources
 
@@ -84,6 +88,9 @@ Available Studio graphs right now:
 
 - `ecommerce_support`
 - `short_term_memory`
+- `reflexion`
+- `supply_chain_single`
+- `supply_chain_multi`
 
 ## Important Note
 

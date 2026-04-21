@@ -37,19 +37,23 @@ Use these as secondary support while working through the repo:
 
 ## Current Progress
 
-As of 2026-04-13:
+As of 2026-04-21:
 
 - Chapter 0 is complete
 - Chapter 1 is complete enough to move on
 - Chapter 2 is complete enough to move on
 - Chapter 3 is complete enough to move on
 - Chapter 4 is complete enough to move on
+- Chapter 5 is complete enough to move on
+- Chapter 6 is complete enough to move on
 - startup setup and baseline checks were verified locally
 - the memory and reflexion examples were updated to run on the repo's pinned LangGraph version
-- the ecommerce graph and short-term memory example are both available in Studio
+- the ecommerce, short-term memory, reflexion, and supply-chain comparison graphs are available in Studio
 - the MCP math and weather servers now run as real FastMCP servers, and the LangGraph MCP client works end to end
 - the Nuxt MCP weather sandbox now works end to end from the Nuxt server route
-- next optional extension is the ChatGPT-visible MCP Apps weather widget in `frontend/mcp-apps/`
+- the Nuxt MCP weather sandbox now carries a request correlation ID through the route, MCP client, and Python MCP weather server
+- LangSmith dataset import scripts now exist for turning repo JSONL evaluation sets into visual datasets and Studio experiments
+- next practical capstone work is to deepen the MCP observability path or add eval coverage for the MCP weather flow
 
 ---
 

@@ -18,8 +18,12 @@ from langchain_core.callbacks import StreamingStdOutCallbackHandler
 from langchain.tools import tool
 from langgraph.graph import StateGraph, END
 
-from traceloop.sdk import Traceloop
 from src.common.observability.loki_logger import log_to_loki
+
+try:
+    from traceloop.sdk import Traceloop
+except ImportError:
+    Traceloop = None
 
 os.environ["OTEL_EXPORTER_OTLP_ENDPOINT"] = "http://localhost:4317"
 os.environ["OTEL_EXPORTER_OTLP_INSECURE"] = "true"
@@ -143,8 +147,9 @@ TOOLS = [
     optimize_costs, optimize_delivery, manage_disruption, send_logistics_response
 ]
 
-Traceloop.init(disable_batch=True, app_name="supply_chain_logistics_agent")
-llm = ChatOpenAI(model="gpt-4o", temperature=0.0, callbacks=[StreamingStdOutCallbackHandler()],  
+if Traceloop is not None:
+    Traceloop.init(disable_batch=True, app_name="supply_chain_logistics_agent")
+llm = ChatOpenAI(model="gpt-5.4-nano", temperature=0.0, callbacks=[StreamingStdOutCallbackHandler()],  
     verbose=True).bind_tools(TOOLS)
 
 class AgentState(TypedDict):
@@ -205,6 +210,7 @@ def construct_graph():
     g = StateGraph(AgentState)
     g.add_node("assistant", call_model)
     g.set_entry_point("assistant")
+    g.add_edge("assistant", END)
     return g.compile()
 
 graph = construct_graph()
